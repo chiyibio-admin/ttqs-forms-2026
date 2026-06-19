@@ -181,7 +181,7 @@ async function submitForm(e) {
   });
 
   // 送出到 GAS Web App
-  if (GAS_URL && GAS_URL !== 'https://script.google.com/macros/s/AKfycbxVJsHr-QgDlU53xABVoYrklRgUN8wXjJfXE1LGbH1BtVvjbZFvAywr9vsUQJi_Runx/exec') {
+  if (GAS_URL) {
     try {
       fetch(GAS_URL, {
         method:  'POST',
