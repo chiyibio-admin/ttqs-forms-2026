@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R-001_培訓過程監控表_115年V2</title>
+<style>
+:root {
+  --bg:#f5f7fa; --card:#ffffff; --sec-bg:#ffffff;
+  --accent:#1a56db; --text:#1a1a2e; --muted:#64748b;
+  --border:#e2e8f0; --white:#ffffff; --req:#dc2626;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft JhengHei","Noto Sans TC",Arial,sans-serif;
+  background:var(--bg);color:var(--text);padding:28px 16px;min-height:100vh}
+.wrap{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* 表頭 */
+.hdr{background:var(--accent);border-radius:14px;
+  padding:36px 32px 28px;text-align:center;
+  box-shadow:0 4px 16px rgba(26,86,219,.25)}
+.hdr h1{font-size:1.7rem;font-weight:600;color:#fff;margin-bottom:0}
+
+/* 卡片 */
+.card{background:var(--card);border-radius:12px;padding:22px 24px;
+  box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-title{font-size:.97rem;font-weight:700;color:var(--accent);
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:2px solid var(--accent);
+  display:flex;align-items:center;gap:6px}
+
+/* 格線 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:5px}
+label{font-size:.9rem;color:var(--muted);font-weight:500}
+label .r{color:var(--req);margin-left:2px}
+
+/* 輸入框 */
+input[type=text],input[type=date],select,textarea{
+  background:#fff;border:1.5px solid var(--border);border-radius:8px;
+  padding:10px 13px;font-size:1rem;color:var(--text);width:100%;
+  font-family:inherit;transition:border-color .15s, box-shadow .15s;}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+textarea{min-height:96px;resize:vertical;line-height:1.6}
+
+/* 量表（新格式） */
+.scale-wrap{background:#f8faff;border-radius:10px;padding:14px 16px}
+.scale-labels{display:flex;justify-content:space-between;
+  font-size:.85rem;color:var(--muted);margin-bottom:10px}
+.scale-btns{display:flex;gap:8px}
+
+/* 量表（舊格式相容） */
+.scale-row{background:#f8faff;border-radius:10px;padding:14px 16px;
+  display:flex;align-items:center;gap:8px}
+.scale-lbl{font-size:.85rem;color:var(--muted);flex:0 0 auto;white-space:nowrap}
+.scale-mid{display:flex;gap:8px;flex:1}
+
+.sc{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sc span{font-size:.9rem;color:var(--muted);font-weight:600}
+.sc input{width:18px;height:18px;cursor:pointer;accent-color:var(--accent)}
+
+/* 選項 */
+.choices{display:flex;flex-direction:column;gap:8px}
+.ci{display:flex;align-items:center;gap:10px;font-size:1rem;
+  padding:9px 12px;border-radius:8px;cursor:pointer;
+  border:1.5px solid var(--border);transition:all .15s;}
+.ci:hover{border-color:var(--accent);background:#f8faff}
+.ci input{width:16px;height:16px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+
+/* 說明框 */
+.info-bar,.info{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;
+  padding:11px 18px;text-align:center;font-size:.93rem;color:#1e40af}
+
+/* 送出 */
+.sub-wrap{text-align:center;padding:4px 0}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;
+  padding:14px 56px;font-size:1.1rem;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .18s;letter-spacing:.3px;
+  box-shadow:0 4px 12px rgba(26,86,219,.3)}
+.btn:hover{background:#1441b8;box-shadow:0 6px 16px rgba(26,86,219,.4);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+
+/* 完成畫面 */
+#ok{display:none;background:#fff;border:1.5px solid #10b981;border-radius:14px;
+  padding:40px;text-align:center}
+#ok .ok-icon{font-size:3rem;margin-bottom:12px}
+#ok h2{font-size:1.5rem;color:#065f46;margin-bottom:8px}
+#ok p{font-size:1rem;color:#64748b}
+
+/* 頁尾 */
+.footer{text-align:center;font-size:.84rem;color:#94a3b8;padding:8px 0 16px;line-height:1.8}
+
+@media(max-width:580px){
+  .grid{grid-template-columns:1fr}
+  .hdr{padding:28px 20px 22px}
+  .card{padding:18px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 表頭 -->
+  <div class="hdr">
+    <h1>培訓過程監控表</h1>
+  </div>
+
+  <!-- 評分說明（僅含量表的表單顯示） -->
+  
+
+  <!-- 表單主體 -->
+  <form id="mainForm" onsubmit="submitForm(event)">
+    <div class="card"><div class="card-title">📋 基本資訊</div><div class="grid"><div class="f"><label for="_____0">監控日期<span class="r">*</span></label><input type="date" id="_____0" name="_____0" required></div><div class="f"><label for="_____1">監控人員<span class="r">*</span></label><input type="text" id="_____1" name="_____1" placeholder="請輸入" required></div><div class="f"><label for="________2">課程名稱/期別<span class="r">*</span></label><input type="text" id="________2" name="________2" placeholder="請輸入" required></div><div class="f"><label for="_________3">本期計畫辦理場次<span class="r">*</span></label><input type="text" id="_________3" name="_________3" placeholder="請輸入" required></div></div></div><div class="card"><div class="card-title">📝 填寫內容</div><div class="grid"><div class="f"><label for="________0">累計已完成場次<span class="r">*</span></label><input type="text" id="________0" name="________0" placeholder="請輸入" required></div><div class="f"><label for="___________1">計畫進度達成率（%）<span class="r">*</span></label><input type="text" id="___________1" name="___________1" placeholder="請輸入" required></div><div class="f"><label for="_________2">學員出席率（%）<span class="r">*</span></label><input type="text" id="_________2" name="_________2" placeholder="請輸入" required></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="____________0">已達成量化訓練目標說明<span class="r">*</span></label><textarea id="____________0" name="____________0" placeholder="請輸入..." required></textarea></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="_____________0">尚未達成量化訓練目標說明<span class="r">*</span></label><textarea id="_____________0" name="_____________0" placeholder="請輸入..." required></textarea></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="_______0">目前發現問題<span class="r">*</span></label><textarea id="_______0" name="_______0" placeholder="請輸入..." required></textarea></div></div></div><div class="card"><div class="card-title">🔧 處理與改善</div><div class="grid"><div class="f full"><label for="________0">矯正措施與計畫<span class="r">*</span></label><textarea id="________0" name="________0" placeholder="請輸入..." required></textarea></div></div></div><div class="card"><div class="card-title">📝 填寫內容</div><div class="grid"><div class="f"><label for="_________0">下次監控預定日期<span class="r">*</span></label><input type="date" id="_________0" name="_________0" required></div></div></div>
+    <div class="sub-wrap">
+      <button type="submit" class="btn">送出表單</button>
+    </div>
+  </form>
+
+  <!-- 成功訊息 -->
+  <div id="ok">
+    <h2>✅ 填寫完成！</h2>
+    <p>感謝您的填寫，回覆已成功送出。</p>
+    <p style="margin-top:8px;font-size:.85rem;color:#047857">奇異生技股份有限公司 訓練部門</p>
+  </div>
+
+  <!-- 頁尾 -->
+
+  <div class="footer">
+    培訓過程監控表<br>
+    奇異生技股份有限公司 · 115年度訓練品質管理<br>
+    R-001 · R查核 · 指標15、16
+  </div>
+
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxVJsHr-QgDlU53xABVoYrklRgUN8wXjJfXE1LGbH1BtVvjbZFvAywr9vsUQJi_Runx/exec';
+const FORM_CODE = 'R-001';
+const FIELD_IDS = ["_____0","_____1","________2","_________3","________4","___________5","_________6","____________7","_____________8","_______9","________10","_________11"];
+
+async function submitForm(e) {
+  e.preventDefault();
+  const form = document.getElementById('mainForm');
+  const btn  = form.querySelector('.btn');
+  btn.textContent = '送出中...';
+  btn.disabled    = true;
+
+  // 收集資料（欄位標籤 → 值）
+  const data = {
+    formCode:   FORM_CODE,
+    submitTime: new Date().toLocaleString('zh-TW')
+  };
+
+  form.querySelectorAll('.f').forEach(function(field) {
+    const labelEl = field.querySelector('label');
+    if (!labelEl) return;
+    // 取標籤文字，去除必填星號與多餘空白
+    const labelText = labelEl.textContent.replace(/[\*＊]/g, '').trim();
+    if (!labelText) return;
+
+    const radios    = field.querySelectorAll('input[type="radio"]');
+    const checkboxes= field.querySelectorAll('input[type="checkbox"]');
+    const selects   = field.querySelectorAll('select');
+    const texts     = field.querySelectorAll('input[type="text"], input[type="date"], textarea');
+
+    if (radios.length) {
+      const checked = field.querySelector('input[type="radio"]:checked');
+      data[labelText] = checked ? checked.value : '';
+    } else if (checkboxes.length) {
+      const vals = Array.from(field.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
+      data[labelText] = vals.join('、');
+    } else if (selects.length) {
+      data[labelText] = selects[0].value;
+    } else if (texts.length) {
+      data[labelText] = texts[0].value;
+    }
+  });
+
+  // 送出到 GAS Web App
+  if (GAS_URL && GAS_URL !== 'https://script.google.com/macros/s/AKfycbxVJsHr-QgDlU53xABVoYrklRgUN8wXjJfXE1LGbH1BtVvjbZFvAywr9vsUQJi_Runx/exec') {
+    try {
+      fetch(GAS_URL, {
+        method:  'POST',
+        mode:    'no-cors',   // GAS 跨域需使用 no-cors
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(data)
+      });
+    } catch (err) {
+      console.error('送出失敗:', err);
+    }
+  }
+
+  // no-cors 無法讀取回應，直接顯示成功畫面
+  setTimeout(function() {
+    form.style.display = 'none';
+    document.getElementById('ok').style.display = 'block';
+  }, 800);
+}
+</script>
+</body>
+</html>
