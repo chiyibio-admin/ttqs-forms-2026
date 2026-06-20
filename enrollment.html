@@ -274,11 +274,13 @@
       <select class="filter-select" id="filterDept" onchange="filterCourses()">
         <option value="">全部部門</option>
         <option value="全體">全體員工</option>
-        <option value="業務">業務部</option>
-        <option value="研發">研發部</option>
-        <option value="生產">生產部</option>
-        <option value="品管">品管部</option>
-        <option value="行政">行政部</option>
+        <option value="人事">人事部</option>
+        <option value="企劃">企劃部</option>
+        <option value="財務">財務部</option>
+        <option value="營運">營運部</option>
+        <option value="HD訓練稽核">HD訓練稽核部</option>
+        <option value="行銷公關">行銷公關部</option>
+        <option value="決策">決策部</option>
       </select>
       <select class="filter-select" id="filterStatus" onchange="filterCourses()">
         <option value="">全部狀態</option>
@@ -456,7 +458,7 @@ let allCourses = [
   {
     id: "CRS-001",
     title: "職場安全衛生教育訓練",
-    instructor: "人資部",
+    instructor: "人事部",
     date: "2026-07-10",
     time: "09:00–12:00",
     location: "A棟2F會議室",
@@ -513,13 +515,13 @@ let allCourses = [
     instructor: "林研究員",
     date: "2026-08-20",
     time: "09:00–12:00",
-    location: "研發部 seminar room",
+    location: "訓練教室",
     dept: "研發",
     type: "專業技術",
     quota: 12,
     enrolled: 12,
     status: "closed",
-    description: "生物統計基礎與 R 語言應用，限研發部同仁參加。",
+    description: "生物統計基礎與 R 語言應用，適用相關部門同仁。",
     afterForms: [
       { code: "O-002", name: "滿意度調查（L1）", url: "O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%87%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" }
     ]
@@ -641,8 +643,13 @@ function openRegModal(courseId) {
       <label class="form-label">部門 <span class="required">*</span></label>
       <select class="form-input" id="regDept">
         <option value="">請選擇部門</option>
-        <option>業務部</option><option>研發部</option><option>生產部</option>
-        <option>品管部</option><option>行政部</option><option>人資部</option>
+        <option>人事部</option>
+        <option>企劃部</option>
+        <option>財務部</option>
+        <option>營運部</option>
+        <option>HD訓練稽核部</option>
+        <option>行銷公關部</option>
+        <option>決策部</option>
       </select>
     </div>
     <div class="form-group">
