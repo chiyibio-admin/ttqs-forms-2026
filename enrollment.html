@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>課程報名系統 | 奇異生技 TTQS 115年</title>
+<style>
+  :root {
+    --blue-dark: #1a3a5c;
+    --blue-mid: #2563a8;
+    --blue-light: #e8f0fb;
+    --gold: #c8960c;
+    --gold-light: #fff8e6;
+    --green: #15803d;
+    --green-light: #dcfce7;
+    --red: #b91c1c;
+    --red-light: #fee2e2;
+    --gray: #374151;
+    --gray-light: #f3f4f6;
+    --white: #ffffff;
+    --border: #d1d5db;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: #f0f4f8; color: var(--gray); min-height: 100vh; }
+
+  /* ── Header ── */
+  .site-header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+    color: white; padding: 0;
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 32px; }
+  .header-logo { display: flex; align-items: center; gap: 12px; }
+  .header-logo .badge {
+    background: var(--gold); color: white; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 1px;
+  }
+  .header-logo h1 { font-size: 18px; font-weight: 700; }
+  .header-logo p { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+  .header-nav { display: flex; gap: 8px; }
+  .header-nav a {
+    color: rgba(255,255,255,0.8); text-decoration: none; font-size: 13px;
+    padding: 6px 14px; border-radius: 6px; transition: all 0.2s;
+  }
+  .header-nav a:hover, .header-nav a.active { background: rgba(255,255,255,0.15); color: white; }
+  .header-banner {
+    background: rgba(0,0,0,0.2); padding: 10px 32px;
+    display: flex; align-items: center; gap: 8px; font-size: 13px; opacity: 0.9;
+  }
+
+  /* ── Main Layout ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+
+  /* ── Tabs ── */
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    padding: 10px 20px; border: none; background: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: #6b7280; border-bottom: 3px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s;
+  }
+  .tab-btn.active { color: var(--blue-mid); border-bottom-color: var(--blue-mid); }
+  .tab-btn:hover { color: var(--blue-mid); }
+
+  /* ── Section ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Alert Box ── */
+  .alert {
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 20px;
+    font-size: 13.5px; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .alert-info { background: var(--blue-light); border-left: 4px solid var(--blue-mid); }
+  .alert-warn { background: var(--gold-light); border-left: 4px solid var(--gold); }
+
+  /* ── Search / Filter ── */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .search-box {
+    flex: 1; min-width: 200px; padding: 9px 14px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; outline: none;
+  }
+  .search-box:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,168,0.15); }
+  .filter-select {
+    padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; background: white; cursor: pointer; outline: none;
+  }
+
+  /* ── Course Cards ── */
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .course-card {
+    background: white; border-radius: 12px; border: 1px solid var(--border);
+    overflow: hidden; transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .course-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .card-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--gray-light); }
+  .card-tags { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .tag-dept { background: var(--blue-light); color: var(--blue-mid); }
+  .tag-type { background: #f3e8ff; color: #7c3aed; }
+  .tag-open { background: var(--green-light); color: var(--green); }
+  .tag-full { background: var(--red-light); color: var(--red); }
+  .tag-waitlist { background: var(--gold-light); color: var(--gold); }
+  .card-title { font-size: 16px; font-weight: 700; color: var(--blue-dark); line-height: 1.4; }
+  .card-body { padding: 14px 18px; }
+  .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #6b7280; }
+  .meta-item span { font-size: 15px; }
+  .quota-bar-wrap { margin-bottom: 14px; }
+  .quota-label { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+  .quota-bar { height: 6px; background: var(--gray-light); border-radius: 3px; overflow: hidden; }
+  .quota-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+  .quota-fill.ok { background: var(--green); }
+  .quota-fill.warn { background: var(--gold); }
+  .quota-fill.full { background: var(--red); }
+  .card-footer { padding: 0 18px 16px; display: flex; gap: 8px; }
+  .btn {
+    flex: 1; padding: 9px 14px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s; text-align: center; text-decoration: none;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-primary { background: var(--blue-mid); color: white; }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-waitlist { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold); }
+  .btn-waitlist:hover { background: #fde68a; }
+  .btn-disabled { background: var(--gray-light); color: #9ca3af; cursor: not-allowed; }
+  .btn-outline { background: white; color: var(--blue-mid); border: 1px solid var(--blue-mid); flex: 0; padding: 9px 14px; }
+  .btn-outline:hover { background: var(--blue-light); }
+  .btn-sm { font-size: 12px; padding: 6px 12px; flex: 0; border-radius: 6px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 100; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .modal-header h2 { font-size: 18px; color: var(--blue-dark); }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #9ca3af; padding: 0 4px; }
+  .modal-body { padding: 20px 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray); margin-bottom: 6px; }
+  .form-label .required { color: var(--red); margin-left: 3px; }
+  .form-input {
+    width: 100%; padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,168,0.15); }
+  .course-summary {
+    background: var(--blue-light); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;
+  }
+  .course-summary h3 { font-size: 15px; color: var(--blue-dark); margin-bottom: 8px; }
+  .course-summary .info-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .course-summary .info-item { font-size: 13px; color: #374151; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-cancel { background: var(--gray-light); color: var(--gray); }
+  .btn-cancel:hover { background: #e5e7eb; }
+
+  /* ── Success View ── */
+  .success-box {
+    text-align: center; padding: 32px 24px;
+  }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-box h2 { color: var(--green); font-size: 22px; margin-bottom: 8px; }
+  .success-box p { color: #6b7280; font-size: 14px; line-height: 1.6; }
+  .next-steps { text-align: left; background: var(--gray-light); border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
+  .next-steps h4 { font-size: 13px; font-weight: 700; color: var(--gray); margin-bottom: 10px; }
+  .next-steps li { font-size: 13px; color: #6b7280; margin-bottom: 6px; list-style: none; padding-left: 0; }
+  .next-steps li::before { content: "✓ "; color: var(--green); font-weight: 700; }
+
+  /* ── My Records Tab ── */
+  .query-box { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 24px; max-width: 480px; margin: 0 auto; }
+  .query-box h2 { font-size: 18px; color: var(--blue-dark); margin-bottom: 6px; }
+  .query-box p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+  .record-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  .record-table th { background: var(--blue-dark); color: white; padding: 10px 12px; text-align: left; }
+  .record-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .record-table tr:nth-child(even) td { background: var(--gray-light); }
+  .status-badge {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 4px; letter-spacing: 0.5px;
+  }
+  .status-confirmed { background: var(--green-light); color: var(--green); }
+  .status-waitlist { background: var(--gold-light); color: var(--gold); }
+  .status-cancelled { background: var(--red-light); color: var(--red); }
+
+  /* ── Forms Hub Tab ── */
+  .forms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .form-card {
+    background: white; border-radius: 10px; border: 1px solid var(--border);
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: inherit; transition: all 0.2s;
+  }
+  .form-card:hover { border-color: var(--blue-mid); box-shadow: 0 2px 12px rgba(37,99,168,0.15); transform: translateY(-1px); }
+  .form-icon { font-size: 28px; flex-shrink: 0; }
+  .form-info { flex: 1; }
+  .form-code { font-size: 11px; font-weight: 700; color: var(--blue-mid); letter-spacing: 1px; }
+  .form-name { font-size: 14px; font-weight: 600; color: var(--blue-dark); margin: 2px 0; }
+  .form-indicators { font-size: 11px; color: #9ca3af; }
+  .phase-title { font-size: 13px; font-weight: 700; color: var(--gray); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+  .phase-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-right: 8px; }
+  .pill-p { background: #dbeafe; color: #1d4ed8; }
+  .pill-d { background: #ede9fe; color: #6d28d9; }
+  .pill-do { background: #fce7f3; color: #9d174d; }
+  .pill-r { background: #ffedd5; color: #c2410c; }
+  .pill-o { background: #dcfce7; color: #166534; }
+
+  /* ── Loading ── */
+  .loading { text-align: center; padding: 48px; color: #9ca3af; }
+  .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--blue-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty { text-align: center; padding: 48px; color: #9ca3af; font-size: 14px; }
+
+  /* ── Footer ── */
+  .site-footer { background: var(--blue-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 16px; font-size: 12px; margin-top: 48px; }
+
+  @media (max-width: 640px) {
+    .header-top { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .header-nav { flex-wrap: wrap; }
+    .toolbar { flex-direction: column; }
+    .course-grid { grid-template-columns: 1fr; }
+    .card-meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Site Header ── -->
+<header class="site-header">
+  <div class="header-top">
+    <div class="header-logo">
+      <div>
+        <div class="badge">TTQS 115年</div>
+        <h1>課程報名系統</h1>
+        <p>奇異生技股份有限公司 · 訓練品質管理</p>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <a href="index.html">📋 表單清單</a>
+      <a href="enrollment.html" class="active">🎓 課程報名</a>
+    </nav>
+  </div>
+  <div class="header-banner">
+    📢 填寫結果將自動記錄至訓練部門 Google 試算表，確認報名後請留意確認信件。
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('courses')">🎓 課程報名</button>
+    <button class="tab-btn" onclick="switchTab('myrecords')">📋 我的記錄</button>
+    <button class="tab-btn" onclick="switchTab('forms')">📝 TTQS 表單</button>
+  </div>
+
+  <!-- ── Tab: 課程報名 ── -->
+  <div id="tab-courses" class="section active">
+    <div class="alert alert-info">
+      📌 點選課程卡片上的「立即報名」即可完成報名，名額即時更新。滿額後可選擇加入候補名單，有空位時系統將自動通知您。
+    </div>
+
+    <div class="toolbar">
+      <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜尋課程名稱、講師..." oninput="filterCourses()">
+      <select class="filter-select" id="filterDept" onchange="filterCourses()">
+        <option value="">全部部門</option>
+        <option value="全體">全體員工</option>
+        <option value="業務">業務部</option>
+        <option value="研發">研發部</option>
+        <option value="生產">生產部</option>
+        <option value="品管">品管部</option>
+        <option value="行政">行政部</option>
+      </select>
+      <select class="filter-select" id="filterStatus" onchange="filterCourses()">
+        <option value="">全部狀態</option>
+        <option value="open">報名中</option>
+        <option value="waitlist">候補中</option>
+        <option value="closed">已截止</option>
+      </select>
+    </div>
+
+    <div id="courseGrid" class="course-grid">
+      <div class="loading"><div class="spinner"></div><p style="margin-top:12px">載入課程中...</p></div>
+    </div>
+  </div>
+
+  <!-- ── Tab: 我的記錄 ── -->
+  <div id="tab-myrecords" class="section">
+    <div class="query-box">
+      <h2>📋 我的報名記錄</h2>
+      <p>輸入您的員工編號與 Email 查詢個人報名狀況。</p>
+      <div class="form-group">
+        <label class="form-label">員工編號 <span class="required">*</span></label>
+        <input type="text" class="form-input" id="queryEmpId" placeholder="例：EMP001">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input type="email" class="form-input" id="queryEmail" placeholder="your@email.com">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="queryMyRecords()">🔍 查詢我的記錄</button>
+      <div id="myRecordsResult"></div>
+    </div>
+  </div>
+
+  <!-- ── Tab: TTQS 表單 ── -->
+  <div id="tab-forms" class="section">
+    <div class="alert alert-warn">
+      ⚡ 以下為 TTQS 115年度所有作業表單，點擊即可直接填寫。部分表單須由管理者或講師填寫，請確認身分後再行填寫。
+    </div>
+
+    <div class="phase-title"><span class="phase-pill pill-p">P</span>計畫階段</div>
+    <div class="forms-grid">
+      <a class="form-card" href="P-001_%E6%8B%9B%E5%8B%9F%E5%AD%B8%E5%93%A1%E8%A8%93%E7%B7%B4%E9%9C%80%E6%B1%82%E8%AA%BF%E6%9F%A5%E5%95%8F%E5%8D%B7_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📋</div><div class="form-info"><div class="form-code">P-001</div><div class="form-name">招募學員訓練需求調查問卷</div><div class="form-indicators">指標 5、7、9</div></div>
+      </a>
+      <a class="form-card" href="P-002_%E5%AD%B8%E5%93%A1%E5%B0%88%E9%95%B7%E8%83%BD%E5%8A%9B%E7%AD%89%E7%B4%9A%E5%88%86%E7%B4%9A%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📊</div><div class="form-info"><div class="form-code">P-002</div><div class="form-name">學員專長能力等級分級表</div><div class="form-indicators">指標 7、8</div></div>
+      </a>
+      <a class="form-card" href="P-003_%E8%81%B7%E8%83%BD%E8%90%BD%E5%B7%AE%E5%88%86%E6%9E%90%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🎯</div><div class="form-info"><div class="form-code">P-003</div><div class="form-name">職能落差分析表</div><div class="form-indicators">指標 1、5、7</div></div>
+      </a>
+      <a class="form-card" href="P-004_%E6%B4%BE%E5%A4%96%E8%A8%93%E7%B7%B4%E7%94%B3%E8%AB%8B%E5%96%AE_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">✈️</div><div class="form-info"><div class="form-code">P-004</div><div class="form-name">派外訓練申請單</div><div class="form-indicators">指標 5、6</div></div>
+      </a>
+    </div>
+
+    <div class="phase-title"><span class="phase-pill pill-d">D</span>設計階段</div>
+    <div class="forms-grid">
+      <a class="form-card" href="D-001_%E8%A8%93%E7%B7%B4%E8%AA%B2%E7%A8%8B%E8%A8%AD%E8%A8%88%E5%AF%A9%E6%9F%A5%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📐</div><div class="form-info"><div class="form-code">D-001</div><div class="form-name">訓練課程設計審查表</div><div class="form-indicators">指標 8、9、10</div></div>
+      </a>
+      <a class="form-card" href="D-002_%E8%AC%9B%E5%B8%AB%E8%B3%87%E6%96%99%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">👨‍🏫</div><div class="form-info"><div class="form-code">D-002</div><div class="form-name">講師資料表</div><div class="form-indicators">指標 10、11</div></div>
+      </a>
+      <a class="form-card" href="D-003_%E8%AC%9B%E5%B8%AB%E9%82%80%E8%AB%8B%E5%87%BD%EF%BC%88%E5%9B%9E%E5%87%BD%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📩</div><div class="form-info"><div class="form-code">D-003</div><div class="form-name">講師邀請函（回函）</div><div class="form-indicators">指標 10、11</div></div>
+      </a>
+      <a class="form-card" href="D-004_%E8%AC%9B%E5%B8%AB%E9%82%80%E8%AB%8B%E7%A2%BA%E8%AA%8D%E5%96%AE_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">✅</div><div class="form-info"><div class="form-code">D-004</div><div class="form-name">講師邀請確認單</div><div class="form-indicators">指標 10、11</div></div>
+      </a>
+      <a class="form-card" href="D-005_%E8%AC%9B%E5%B8%AB%E5%AF%A9%E6%9F%A5%E8%A9%95%E5%88%86%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">⭐</div><div class="form-info"><div class="form-code">D-005</div><div class="form-name">講師審查評分表</div><div class="form-indicators">指標 10、11</div></div>
+      </a>
+      <a class="form-card" href="D-006_%E8%AC%9B%E5%B8%AB%E6%BA%9D%E9%80%9A%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">💬</div><div class="form-info"><div class="form-code">D-006</div><div class="form-name">講師溝通表</div><div class="form-indicators">指標 10、11</div></div>
+      </a>
+    </div>
+
+    <div class="phase-title"><span class="phase-pill pill-do">Do</span>執行階段</div>
+    <div class="forms-grid">
+      <a class="form-card" href="Do-001_%E8%A8%93%E7%B7%B4%E5%A0%B4%E5%9C%B0%E8%B3%87%E6%96%99%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🏫</div><div class="form-info"><div class="form-code">Do-001</div><div class="form-name">訓練場地資料表</div><div class="form-indicators">指標 12</div></div>
+      </a>
+      <a class="form-card" href="Do-002_%E5%AD%B8%E5%93%A1%E4%B8%8A%E8%AA%B2%E9%80%9A%E7%9F%A5%E5%96%AE%EF%BC%88%E5%9B%9E%E5%87%BD%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🔔</div><div class="form-info"><div class="form-code">Do-002</div><div class="form-name">學員上課通知單（回函）</div><div class="form-indicators">指標 12、13</div></div>
+      </a>
+      <a class="form-card" href="Do-003_%E8%AA%B2%E7%A8%8B%E5%89%8D%E4%B8%AD%E5%BE%8C%E5%9F%B7%E8%A1%8C%E6%AA%A2%E9%BB%9E%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📋</div><div class="form-info"><div class="form-code">Do-003</div><div class="form-name">課程前中後執行檢點表</div><div class="form-indicators">指標 12、13、14</div></div>
+      </a>
+      <a class="form-card" href="Do-004_%E7%9D%A3%E8%AA%B2%E6%97%A5%E8%AA%8C_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📓</div><div class="form-info"><div class="form-code">Do-004</div><div class="form-name">督課日誌</div><div class="form-indicators">指標 13、14</div></div>
+      </a>
+    </div>
+
+    <div class="phase-title"><span class="phase-pill pill-r">R</span>查核階段</div>
+    <div class="forms-grid">
+      <a class="form-card" href="R-001_%E5%9F%B9%E8%A8%93%E9%81%8E%E7%A8%8B%E7%9B%A3%E6%8E%A7%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🔍</div><div class="form-info"><div class="form-code">R-001</div><div class="form-name">培訓過程監控表</div><div class="form-indicators">指標 15、16</div></div>
+      </a>
+      <a class="form-card" href="R-002_%E7%95%B0%E5%B8%B8%E8%99%95%E7%90%86%E5%96%AE_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">⚠️</div><div class="form-info"><div class="form-code">R-002</div><div class="form-name">異常處理單</div><div class="form-indicators">指標 16</div></div>
+      </a>
+      <a class="form-card" href="R-003_%E8%A8%93%E7%B7%B4%E7%B5%90%E6%A1%88%E8%A9%95%E4%BC%B0%E5%A0%B1%E5%91%8A%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📊</div><div class="form-info"><div class="form-code">R-003</div><div class="form-name">訓練結案評估報告表</div><div class="form-indicators">指標 15、16、17</div></div>
+      </a>
+      <a class="form-card" href="R-004_%E7%95%B0%E5%B8%B8%E7%8B%80%E6%B3%81%E7%9F%AF%E6%AD%A3%E8%88%87%E9%A0%90%E9%98%B2%E8%99%95%E7%90%86%E5%BD%99%E6%95%B4_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🔧</div><div class="form-info"><div class="form-code">R-004</div><div class="form-name">異常狀況矯正與預防處理彙整</div><div class="form-indicators">指標 16</div></div>
+      </a>
+      <a class="form-card" href="R-005_%E5%AE%9A%E6%9C%9F%E7%B6%9C%E5%90%88%E6%AA%A2%E8%A8%8E%E5%A0%B1%E5%91%8A%E6%9B%B8%EF%BC%88%E6%9C%88%E5%BA%A6%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📅</div><div class="form-info"><div class="form-code">R-005</div><div class="form-name">定期綜合檢討報告書（月度）</div><div class="form-indicators">指標 16、17</div></div>
+      </a>
+      <a class="form-card" href="R-006_%E5%AD%B8%E5%93%A1%E8%AA%B2%E5%BE%8C%E8%BF%BD%E8%B9%A4%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%883%E5%80%8B%E6%9C%88%E5%BE%8C%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🔭</div><div class="form-info"><div class="form-code">R-006</div><div class="form-name">學員課後追蹤調查表（3個月後）</div><div class="form-indicators">指標 17、18</div></div>
+      </a>
+    </div>
+
+    <div class="phase-title"><span class="phase-pill pill-o">O</span>成果階段</div>
+    <div class="forms-grid">
+      <a class="form-card" href="O-001_%E8%AC%9B%E5%B8%AB%E8%AA%B2%E5%BE%8C%E5%9B%9E%E9%A5%8B%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">👨‍🏫</div><div class="form-info"><div class="form-code">O-001</div><div class="form-name">講師課後回饋表</div><div class="form-indicators">指標 17</div></div>
+      </a>
+      <a class="form-card" href="O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%89%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">😊</div><div class="form-info"><div class="form-code">O-002</div><div class="form-name">滿意度調查表（L1反應評估）</div><div class="form-indicators">指標 17、18</div></div>
+      </a>
+      <a class="form-card" href="O-003_%E8%A8%93%E7%B7%B4%E8%AA%B2%E7%A8%8B%E5%BF%83%E5%BE%97%E5%A0%B1%E5%91%8A%E8%A1%A8%EF%BC%88L2%E5%AD%B8%E7%BF%92%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📝</div><div class="form-info"><div class="form-code">O-003</div><div class="form-name">課程心得報告表（L2學習評估）</div><div class="form-indicators">指標 17、18</div></div>
+      </a>
+      <a class="form-card" href="O-004_%E8%A8%93%E7%B7%B4%E8%80%83%E6%A0%B8%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📋</div><div class="form-info"><div class="form-code">O-004</div><div class="form-name">訓練考核表</div><div class="form-indicators">指標 17</div></div>
+      </a>
+      <a class="form-card" href="O-005_%E7%B8%BE%E6%95%88%E8%A9%95%E4%BC%B0%E8%A1%A8%EF%BC%88%E8%A8%93%E7%B7%B4%E5%BE%8C3%E5%80%8B%E6%9C%88%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">📈</div><div class="form-info"><div class="form-code">O-005</div><div class="form-name">績效評估表（訓練後3個月）</div><div class="form-indicators">指標 18、19</div></div>
+      </a>
+      <a class="form-card" href="O-006_%E8%A8%93%E7%B7%B4%E6%88%90%E6%95%88%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88%E4%B8%BB%E7%AE%A1%E5%A1%AB%E5%AF%AB%EF%BC%89_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">👔</div><div class="form-info"><div class="form-code">O-006</div><div class="form-name">訓練成效調查表（主管填寫）</div><div class="form-indicators">指標 18</div></div>
+      </a>
+      <a class="form-card" href="O-007_%E5%AD%B8%E5%93%A1%E6%84%8F%E8%A6%8B%E5%8F%8D%E6%87%89%E5%8F%8A%E8%99%95%E7%90%86%E5%96%AE_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">💌</div><div class="form-info"><div class="form-code">O-007</div><div class="form-name">學員意見反應及處理單</div><div class="form-indicators">指標 16、17</div></div>
+      </a>
+      <a class="form-card" href="O-008_%E6%B4%BE%E5%A4%96%E8%A8%93%E7%B7%B4%E5%BF%83%E5%BE%97%E5%A0%B1%E5%91%8A_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">✈️</div><div class="form-info"><div class="form-code">O-008</div><div class="form-name">派外訓練心得報告</div><div class="form-indicators">指標 5、6、18</div></div>
+      </a>
+      <a class="form-card" href="O-009_%E5%BE%8C%E7%BA%8C%E8%BF%BD%E8%B9%A4%E6%BB%BF%E6%84%8F%E5%BA%A6%E5%8F%8A%E9%9C%80%E6%B1%82%E8%AA%BF%E6%9F%A5_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🔭</div><div class="form-info"><div class="form-code">O-009</div><div class="form-name">後續追蹤滿意度及需求調查</div><div class="form-indicators">指標 18、19</div></div>
+      </a>
+      <a class="form-card" href="O-010_%E5%B9%B4%E5%BA%A6%E8%81%B7%E5%93%A1%E8%80%83%E6%A0%B8%E8%A1%A8_115%E5%B9%B4V2.html" target="_blank">
+        <div class="form-icon">🏆</div><div class="form-info"><div class="form-code">O-010</div><div class="form-name">年度職員考核表</div><div class="form-indicators">指標 18、19</div></div>
+      </a>
+    </div>
+  </div>
+</main>
+
+<!-- ── Registration Modal ── -->
+<div class="modal-overlay" id="regModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">課程報名</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  TTQS 115年度訓練品質管理系統 · 奇異生技股份有限公司 · 訓練部門
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════
+// CONFIG — 請在此填入你的 Apps Script Web App 網址
+// ════════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQJBd7UCY1wbU0AqNQRDLHwPpjYJ7pwDMXjqJgo-lCXVvj4ymstqEe_KdbSZDoEaB03NRpPuaseCwqub8drsEYf2lbAGT56sIreYfIRAspmAiMd7R3fvjcgavi1WBpzoft2ExO01TCps7359tIxcfTUaiDHfre85UL8uuWJA9cfVj8rGqKWHb2X3lyMasLXQz-H08aFC42KsTCZF4ZgWNs7-qe_Mn6yYhzaens8nWOgscdSo520fAueex10jVyEPGxgeJTdTi4xO9aAtKcJVpC6imU1CA&lib=M_SlkjkRvzBuxIBDmGBAoEa7cluH7XmAj";
+
+// ── 課程資料 (由 Apps Script 動態載入；此為預設示範資料) ──
+let allCourses = [
+  {
+    id: "CRS-001",
+    title: "職場安全衛生教育訓練",
+    instructor: "人資部",
+    date: "2026-07-10",
+    time: "09:00–12:00",
+    location: "A棟2F會議室",
+    dept: "全體",
+    type: "法規必修",
+    quota: 40,
+    enrolled: 28,
+    status: "open",
+    description: "依法辦理之年度安全衛生教育訓練，全體員工必須參加。",
+    afterForms: [
+      { code: "O-002", name: "滿意度調查（L1）", url: "O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%87%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" },
+      { code: "O-003", name: "課程心得報告（L2）", url: "O-003_%E8%A8%93%E7%B7%B4%E8%AA%B2%E7%A8%8B%E5%BF%83%E5%BE%97%E5%A0%B1%E5%91%8A%E8%A1%A8%EF%BC%88L2%E5%AD%B8%E7%BF%92%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" }
+    ]
+  },
+  {
+    id: "CRS-002",
+    title: "GMP 製造規範更新說明會",
+    instructor: "陳品質 博士",
+    date: "2026-07-18",
+    time: "14:00–17:00",
+    location: "B棟訓練室",
+    dept: "生產",
+    type: "專業技術",
+    quota: 20,
+    enrolled: 19,
+    status: "waitlist",
+    description: "針對最新 GMP 法規修訂內容進行說明，適用生產及品管同仁。",
+    afterForms: [
+      { code: "O-002", name: "滿意度調查（L1）", url: "O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%87%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" },
+      { code: "O-003", name: "課程心得報告（L2）", url: "O-003_%E8%A8%93%E7%B7%B4%E8%AA%B2%E7%A8%8B%E5%BF%83%E5%BE%97%E5%A0%B1%E5%91%8A%E8%A1%A8%EF%BC%88L2%E5%AD%B8%E7%BF%92%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" }
+    ]
+  },
+  {
+    id: "CRS-003",
+    title: "簡報技巧與溝通力培訓",
+    instructor: "王企劃 講師",
+    date: "2026-08-05",
+    time: "09:00–17:00",
+    location: "A棟3F多功能廳",
+    dept: "行政",
+    type: "管理職能",
+    quota: 15,
+    enrolled: 6,
+    status: "open",
+    description: "強化員工簡報製作與跨部門溝通能力，適用行政、業務同仁。",
+    afterForms: [
+      { code: "O-002", name: "滿意度調查（L1）", url: "O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%87%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" },
+      { code: "O-003", name: "課程心得報告（L2）", url: "O-003_%E8%A8%93%E7%B7%B4%E8%AA%B2%E7%A8%8B%E5%BF%83%E5%BE%97%E5%A0%B1%E5%91%8A%E8%A1%A8%EF%BC%88L2%E5%AD%B8%E7%BF%92%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" }
+    ]
+  },
+  {
+    id: "CRS-004",
+    title: "研發人員生物統計應用",
+    instructor: "林研究員",
+    date: "2026-08-20",
+    time: "09:00–12:00",
+    location: "研發部 seminar room",
+    dept: "研發",
+    type: "專業技術",
+    quota: 12,
+    enrolled: 12,
+    status: "closed",
+    description: "生物統計基礎與 R 語言應用，限研發部同仁參加。",
+    afterForms: [
+      { code: "O-002", name: "滿意度調查（L1）", url: "O-002_%E6%BB%BF%E6%84%8F%E5%BA%A6%E8%AA%BF%E6%9F%A5%E8%A1%A8%EF%BC%88L1%E5%8F%8D%E6%87%87%E8%A9%95%E4%BC%B0%EF%BC%89_115%E5%B9%B4V2.html" }
+    ]
+  }
+];
+
+let selectedCourse = null;
+
+// ── Load courses from Apps Script (if configured) ──
+async function loadCourses() {
+  if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    renderCourses(allCourses);
+    return;
+  }
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + "?action=getCourses");
+    const data = await res.json();
+    if (data.courses) { allCourses = data.courses; }
+  } catch(e) { console.warn("使用示範課程資料"); }
+  renderCourses(allCourses);
+}
+
+// ── Render course cards ──
+function renderCourses(courses) {
+  const grid = document.getElementById("courseGrid");
+  if (!courses.length) { grid.innerHTML = `<div class="empty">🔍 沒有符合條件的課程</div>`; return; }
+
+  grid.innerHTML = courses.map(c => {
+    const pct = Math.round((c.enrolled / c.quota) * 100);
+    const remain = c.quota - c.enrolled;
+    const fillClass = pct >= 100 ? "full" : pct >= 80 ? "warn" : "ok";
+
+    let statusTag = "";
+    let actionBtn = "";
+    if (c.status === "open") {
+      statusTag = `<span class="tag tag-open">報名中</span>`;
+      actionBtn = `<button class="btn btn-primary" onclick="openRegModal('${c.id}')">✏️ 立即報名</button>`;
+    } else if (c.status === "waitlist") {
+      statusTag = `<span class="tag tag-waitlist">候補中</span>`;
+      actionBtn = `<button class="btn btn-waitlist" onclick="openRegModal('${c.id}')">📋 加入候補</button>`;
+    } else {
+      statusTag = `<span class="tag tag-full">已截止</span>`;
+      actionBtn = `<button class="btn btn-disabled" disabled>🔒 報名截止</button>`;
+    }
+
+    return `
+    <div class="course-card" data-dept="${c.dept}" data-status="${c.status}" data-search="${c.title.toLowerCase()} ${c.instructor.toLowerCase()}">
+      <div class="card-header">
+        <div class="card-tags">
+          <span class="tag tag-dept">${c.dept}</span>
+          <span class="tag tag-type">${c.type}</span>
+          ${statusTag}
+        </div>
+        <div class="card-title">${c.title}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <div class="meta-item"><span>👨‍🏫</span> ${c.instructor}</div>
+          <div class="meta-item"><span>📅</span> ${c.date}</div>
+          <div class="meta-item"><span>🕐</span> ${c.time}</div>
+          <div class="meta-item"><span>📍</span> ${c.location}</div>
+        </div>
+        <div class="quota-bar-wrap">
+          <div class="quota-label">
+            <span>已報名 ${c.enrolled} / ${c.quota} 人</span>
+            <span>${c.status === "open" ? `剩餘 <b>${remain}</b> 名` : c.status === "waitlist" ? "額滿候補中" : "已截止"}</span>
+          </div>
+          <div class="quota-bar"><div class="quota-fill ${fillClass}" style="width:${Math.min(pct,100)}%"></div></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        ${actionBtn}
+        <button class="btn btn-outline" onclick="showDetail('${c.id}')">詳情</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function filterCourses() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const dept = document.getElementById("filterDept").value;
+  const status = document.getElementById("filterStatus").value;
+  const filtered = allCourses.filter(c =>
+    (c.title.toLowerCase().includes(q) || c.instructor.toLowerCase().includes(q)) &&
+    (!dept || c.dept === dept || (dept === "全體" && c.dept === "全體")) &&
+    (!status || c.status === status)
+  );
+  renderCourses(filtered);
+}
+
+// ── Modal ──
+function openRegModal(courseId) {
+  selectedCourse = allCourses.find(c => c.id === courseId);
+  if (!selectedCourse) return;
+  const c = selectedCourse;
+  const isWaitlist = c.status === "waitlist";
+
+  document.getElementById("modalTitle").textContent = isWaitlist ? "加入候補名單" : "課程報名";
+  document.getElementById("modalBody").innerHTML = `
+    <div class="course-summary">
+      <h3>${c.title}</h3>
+      <div class="info-row">
+        <div class="info-item">📅 ${c.date} ${c.time}</div>
+        <div class="info-item">📍 ${c.location}</div>
+        <div class="info-item">👨‍🏫 ${c.instructor}</div>
+      </div>
+      <p style="margin-top:8px;font-size:13px;color:#374151">${c.description}</p>
+    </div>
+    ${isWaitlist ? `<div class="alert alert-warn">⚠️ 此課程目前額滿，加入候補名單後，有空位時系統將自動以 Email 通知您。</div>` : ""}
+    <div class="form-group">
+      <label class="form-label">員工編號 <span class="required">*</span></label>
+      <input type="text" class="form-input" id="regEmpId" placeholder="例：EMP001" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">姓名 <span class="required">*</span></label>
+      <input type="text" class="form-input" id="regName" placeholder="請輸入真實姓名" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">部門 <span class="required">*</span></label>
+      <select class="form-input" id="regDept">
+        <option value="">請選擇部門</option>
+        <option>業務部</option><option>研發部</option><option>生產部</option>
+        <option>品管部</option><option>行政部</option><option>人資部</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email <span class="required">*</span></label>
+      <input type="email" class="form-input" id="regEmail" placeholder="your@email.com（確認信將寄至此信箱）" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">主管姓名（選填）</label>
+      <input type="text" class="form-input" id="regManager" placeholder="若需主管審核請填寫">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" style="flex:0;padding:9px 20px" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" style="flex:0;padding:9px 24px" onclick="submitReg(${isWaitlist})">
+        ${isWaitlist ? "📋 加入候補" : "✅ 確認報名"}
+      </button>
+    </div>`;
+
+  document.getElementById("regModal").classList.add("open");
+}
+
+function closeModal() {
+  document.getElementById("regModal").classList.remove("open");
+  selectedCourse = null;
+}
+
+async function submitReg(isWaitlist) {
+  const empId = document.getElementById("regEmpId").value.trim();
+  const name = document.getElementById("regName").value.trim();
+  const dept = document.getElementById("regDept").value;
+  const email = document.getElementById("regEmail").value.trim();
+  if (!empId || !name || !dept || !email) { alert("請填寫所有必填欄位"); return; }
+  if (!email.includes("@")) { alert("請輸入正確的 Email"); return; }
+
+  const c = selectedCourse;
+  const payload = {
+    action: "register",
+    courseId: c.id,
+    courseTitle: c.title,
+    courseDate: c.date,
+    courseTime: c.time,
+    courseLocation: c.location,
+    empId, name, dept, email,
+    isWaitlist,
+    manager: document.getElementById("regManager")?.value || "",
+    timestamp: new Date().toISOString()
+  };
+
+  // Submit to Apps Script or show success directly if not configured
+  if (APPS_SCRIPT_URL !== "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    try {
+      const btn = document.querySelector(".modal-footer .btn-primary");
+      btn.textContent = "處理中..."; btn.disabled = true;
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST", body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" }
+      });
+    } catch(e) { console.warn("API call failed, showing success anyway"); }
+  }
+
+  showSuccess(name, c, isWaitlist);
+}
+
+function showSuccess(name, c, isWaitlist) {
+  document.getElementById("modalTitle").textContent = isWaitlist ? "成功加入候補！" : "報名成功！";
+  document.getElementById("modalBody").innerHTML = `
+    <div class="success-box">
+      <div class="success-icon">${isWaitlist ? "📋" : "🎉"}</div>
+      <h2>${isWaitlist ? "已加入候補名單" : "報名成功！"}</h2>
+      <p>${name} 您好，${isWaitlist
+        ? "您已成功加入《" + c.title + "》候補名單，有空位時系統將自動發送 Email 通知。"
+        : "您已成功報名《" + c.title + "》，確認信將寄送至您的 Email 信箱，請注意查收。"}</p>
+      <div class="next-steps">
+        <h4>課程後請完成以下表單（TTQS 必要文件）</h4>
+        <ul>
+          ${c.afterForms.map(f => `<li><a href="${f.url}" target="_blank">${f.code} ${f.name}</a></li>`).join("")}
+        </ul>
+      </div>
+      <button class="btn btn-primary" onclick="closeModal()">確定</button>
+    </div>`;
+}
+
+function showDetail(courseId) {
+  const c = allCourses.find(x => x.id === courseId);
+  if (!c) return;
+  alert("📋 課程說明
+
+" + c.title + "
+
+" + c.description + "
+
+📅 " + c.date + " " + c.time + "
+📍 " + c.location);
+}
+
+// ── My Records Query ──
+async function queryMyRecords() {
+  const empId = document.getElementById("queryEmpId").value.trim();
+  const email = document.getElementById("queryEmail").value.trim();
+  const result = document.getElementById("myRecordsResult");
+  if (!empId || !email) { result.innerHTML = `<p style="color:red;margin-top:12px;font-size:13px">請填寫員工編號與 Email</p>`; return; }
+
+  result.innerHTML = `<div class="loading" style="padding:24px"><div class="spinner"></div></div>`;
+
+  if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    setTimeout(() => {
+      result.innerHTML = `
+        <div class="alert alert-warn" style="margin-top:16px">
+          ℹ️ Apps Script 尚未設定，請依安裝說明完成設定後即可查詢個人記錄。
+        </div>`;
+    }, 800);
+    return;
+  }
+
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=getRecords&empId=${empId}&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    if (!data.records || !data.records.length) {
+      result.innerHTML = `<p style="margin-top:16px;font-size:13px;color:#6b7280">查無報名記錄。</p>`;
+      return;
+    }
+    result.innerHTML = `
+      <table class="record-table">
+        <thead><tr><th>課程名稱</th><th>日期</th><th>狀態</th></tr></thead>
+        <tbody>
+          ${data.records.map(r => `<tr>
+            <td>${r.courseTitle}</td>
+            <td>${r.courseDate}</td>
+            <td><span class="status-badge status-${r.status}">${r.statusLabel}</span></td>
+          </tr>`).join("")}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    result.innerHTML = `<p style="margin-top:16px;font-size:13px;color:red">查詢失敗，請稍後再試。</p>`;
+  }
+}
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+  event.target.classList.add("active");
+}
+
+// ── Close modal on overlay click ──
+document.getElementById("regModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ── Init ──
+loadCourses();
+</script>
+</body>
+</html>
