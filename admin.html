@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTQS 課程管理後台 | 奇異生技</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --primary: #1a3c6e;
+    --primary-light: #2d5fa3;
+    --accent: #e8a020;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+  /* ── Login ── */
+  #loginOverlay {
+    position: fixed; inset: 0; background: linear-gradient(135deg, #1a3c6e 0%, #2d5fa3 100%);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+  }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px 48px; width: 360px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .login-box .logo { font-size: 40px; margin-bottom: 12px; }
+  .login-box h2 { font-size: 20px; color: var(--primary); margin-bottom: 6px; }
+  .login-box p { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+  .login-box input {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; margin-bottom: 14px; outline: none;
+  }
+  .login-box input:focus { border-color: var(--primary-light); }
+  .login-box .btn-login {
+    width: 100%; padding: 12px; background: var(--primary); color: white; border: none;
+    border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: 600;
+  }
+  .login-box .btn-login:hover { background: var(--primary-light); }
+  .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; }
+
+  /* ── Header ── */
+  .topbar {
+    background: var(--primary); color: white; padding: 0 28px;
+    display: flex; align-items: center; gap: 14px; height: 56px;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+  .topbar .logo { font-size: 22px; }
+  .topbar h1 { font-size: 17px; font-weight: 700; flex: 1; }
+  .topbar .badge {
+    background: rgba(255,255,255,.15); border-radius: 20px;
+    padding: 4px 12px; font-size: 12px; color: rgba(255,255,255,.85);
+  }
+  .topbar .btn-logout {
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+    color: white; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  .topbar .btn-logout:hover { background: rgba(255,255,255,.2); }
+
+  /* ── Nav Tabs ── */
+  .nav-tabs {
+    background: white; border-bottom: 1px solid var(--border);
+    display: flex; padding: 0 28px; gap: 4px;
+  }
+  .nav-tab {
+    padding: 14px 20px; font-size: 14px; cursor: pointer; border: none; background: none;
+    color: var(--muted); border-bottom: 3px solid transparent; font-weight: 500;
+    transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--primary); }
+  .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+
+  /* ── Main ── */
+  .main { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── KPI Cards ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07); border-left: 4px solid var(--primary);
+  }
+  .kpi-card.green  { border-left-color: var(--success); }
+  .kpi-card.amber  { border-left-color: var(--warning); }
+  .kpi-card.red    { border-left-color: var(--danger); }
+  .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .kpi-value { font-size: 32px; font-weight: 800; color: var(--primary); line-height: 1; }
+  .kpi-card.green .kpi-value  { color: var(--success); }
+  .kpi-card.amber .kpi-value  { color: var(--warning); }
+  .kpi-card.red   .kpi-value  { color: var(--danger); }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    background: white; border-radius: 10px; padding: 14px 18px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  }
+  .filter-bar select, .filter-bar input {
+    padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 7px;
+    font-size: 13px; background: white; outline: none;
+  }
+  .filter-bar select:focus, .filter-bar input:focus { border-color: var(--primary-light); }
+  .filter-bar .spacer { flex: 1; }
+  .btn { padding: 8px 18px; border: none; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-success { background: var(--success); color: white; }
+  .btn-success:hover { background: #15803d; }
+  .btn-accent { background: var(--accent); color: white; }
+  .btn-accent:hover { background: #c97d10; }
+  .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--bg); }
+
+  /* ── Table ── */
+  .table-wrap { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .table-head { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .table-title { font-weight: 700; font-size: 15px; }
+  .table-count { font-size: 12px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--bg); padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+
+  /* ── Status Badge ── */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-confirmed { background: #dcfce7; color: #16a34a; }
+  .badge-cancelled { background: #fee2e2; color: #dc2626; }
+  .badge-waiting   { background: #fef9c3; color: #ca8a04; }
+
+  /* ── Dept Chart ── */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media(max-width:768px) { .chart-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { width: 90px; font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; background: var(--bg); border-radius: 4px; height: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 4px; transition: width .6s; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+  .bar-fill span { font-size: 11px; color: white; font-weight: 700; }
+
+  /* ── TTQS Report ── */
+  .ttqs-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 16px; }
+  .ttqs-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); color: var(--primary); }
+  .export-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .export-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; }
+  .export-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .export-card p { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+  /* ── Loading ── */
+  .loading-wrap { padding: 48px; text-align: center; color: var(--muted); }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Empty ── */
+  .empty { padding: 48px; text-align: center; color: var(--muted); }
+  .empty .icon { font-size: 40px; margin-bottom: 10px; }
+
+  /* ── Attendance Tab ── */
+  .attend-form { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.07); display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ── Login Overlay ── -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="logo">🏢</div>
+    <h2>TTQS 管理後台</h2>
+    <p>奇異生技股份有限公司 · 115年度</p>
+    <input type="text" id="loginToken" placeholder="請輸入管理者驗證碼" autocomplete="off">
+    <button class="btn-login" onclick="doLogin()">登入</button>
+    <div class="login-error" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ── Top Bar ── -->
+<div class="topbar" id="appBar" style="display:none">
+  <span class="logo">📊</span>
+  <h1>TTQS 課程管理後台</h1>
+  <span class="badge" id="lastUpdate">載入中...</span>
+  <button class="btn-logout" onclick="doLogout()">登出</button>
+</div>
+
+<!-- ── Nav Tabs ── -->
+<div class="nav-tabs" id="navTabs" style="display:none">
+  <button class="nav-tab active" onclick="switchPage('dashboard', this)">📈 總覽</button>
+  <button class="nav-tab" onclick="switchPage('enrollments', this)">📋 報名名單</button>
+  <button class="nav-tab" onclick="switchPage('attendance', this)">✅ 出席管理</button>
+  <button class="nav-tab" onclick="switchPage('export', this)">📤 匯出報表</button>
+</div>
+
+<!-- ── Main ── -->
+<div class="main" id="mainContent" style="display:none">
+
+  <!-- Dashboard -->
+  <div id="page-dashboard" class="page active">
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="loading-wrap"><div class="spinner"></div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>📊 部門報名分佈</h3>
+        <div id="deptChart"><div class="loading-wrap"><div class="spinner"></div></div></div>
+      </div>
+      <div class="chart-card">
+        <h3>📋 報名狀態分佈</h3>
+        <div id="statusChart"><div class="loading-wrap"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enrollments -->
+  <div id="page-enrollments" class="page">
+    <div class="filter-bar">
+      <input type="text" id="searchName" placeholder="🔍 姓名 / 員工編號" oninput="filterTable()" style="width:180px">
+      <select id="filterStatus" onchange="filterTable()">
+        <option value="">全部狀態</option>
+        <option value="confirmed">已確認</option>
+        <option value="waiting">候補中</option>
+        <option value="cancelled">已取消</option>
+      </select>
+      <select id="filterDeptAdmin" onchange="filterTable()">
+        <option value="">全部部門</option>
+        <option>人事部</option><option>企劃部</option><option>財務部</option>
+        <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-success" onclick="exportExcel()">⬇ 匯出 Excel</button>
+      <button class="btn btn-primary" onclick="loadEnrollments()">🔄 重新整理</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head">
+        <span class="table-title">報名名單</span>
+        <span class="table-count" id="enrollCount">—</span>
+      </div>
+      <div id="enrollTable"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div id="page-attendance" class="page">
+    <div class="attend-form">
+      <div class="form-group">
+        <label>課程篩選</label>
+        <select id="attendCourseFilter" onchange="loadAttendance()">
+          <option value="">全部課程</option>
+        </select>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-success" onclick="exportAttendExcel()">⬇ 匯出出席記錄</button>
+      <button class="btn btn-primary" onclick="loadAttendance()">🔄 重新整理</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head">
+        <span class="table-title">出席記錄</span>
+        <span class="table-count" id="attendCount">—</span>
+      </div>
+      <div id="attendTable"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- Export -->
+  <div id="page-export" class="page">
+    <div class="ttqs-section">
+      <h3>📤 TTQS 文件匯出</h3>
+      <div class="export-grid">
+        <div class="export-card">
+          <h4>📋 報名名單（Excel）</h4>
+          <p>完整報名記錄，含員工資訊、部門、狀態、報名時間，符合 TTQS D 設計階段佐證。</p>
+          <button class="btn btn-success" onclick="exportExcel()">⬇ 下載 Excel</button>
+        </div>
+        <div class="export-card">
+          <h4>✅ 出席記錄（Excel）</h4>
+          <p>各課程出席清單，可作為 TTQS Do 執行階段的訓練實施紀錄佐證文件。</p>
+          <button class="btn btn-success" onclick="exportAttendExcel()">⬇ 下載 Excel</button>
+        </div>
+        <div class="export-card">
+          <h4>📊 訓練成效統計（Excel）</h4>
+          <p>各部門出席率、課程開課數、報名人數統計，對應 TTQS O 成果指標。</p>
+          <button class="btn btn-accent" onclick="exportStatsExcel()">⬇ 下載 Excel</button>
+        </div>
+        <div class="export-card">
+          <h4>🗂️ 課程清單（Excel）</h4>
+          <p>所有課程基本資料：名稱、日期、講師、名額、適用部門等完整欄位。</p>
+          <button class="btn btn-outline" onclick="exportCoursesExcel()">⬇ 下載 Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ttqs-section">
+      <h3>📌 TTQS PDDRO 五階段佐證對照</h3>
+      <table>
+        <thead>
+          <tr><th>階段</th><th>指標</th><th>對應系統功能</th><th>佐證文件</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>P 計畫</strong></td><td>訓練需求分析</td><td>課程清單（適用部門設定）</td><td>課程清單 Excel</td></tr>
+          <tr><td><strong>D 設計</strong></td><td>訓練計畫書</td><td>課程資訊完整記錄</td><td>課程清單 Excel</td></tr>
+          <tr><td><strong>Do 執行</strong></td><td>訓練實施紀錄</td><td>報名名單 + 出席記錄</td><td>報名 + 出席 Excel</td></tr>
+          <tr><td><strong>R 查核</strong></td><td>學員滿意度調查</td><td>TTQS表單 L1-L3 問卷</td><td>Google Forms 匯出</td></tr>
+          <tr><td><strong>O 成果</strong></td><td>訓練成效分析</td><td>出席率 + 部門統計</td><td>成效統計 Excel</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Config ──
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQHBTOzGo_UCvSdtGk5b2rpdedyBe6ptBsIfxWUntSiOw5wC7leuJu1v59A1xWxRqb/exec";
+let ADMIN_TOKEN = "";
+let allEnrollData = [];
+let allAttendData = [];
+let statsData = {};
+
+// ── Login ──
+function doLogin() {
+  const token = document.getElementById("loginToken").value.trim();
+  if (!token) { document.getElementById("loginErr").textContent = "請輸入驗證碼"; return; }
+  ADMIN_TOKEN = token;
+  document.getElementById("loginErr").textContent = "驗證中...";
+  fetch(`${APPS_SCRIPT_URL}?action=getStats&token=${encodeURIComponent(token)}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) { document.getElementById("loginErr").textContent = "驗證碼錯誤，請重新輸入"; ADMIN_TOKEN = ""; return; }
+      document.getElementById("loginOverlay").style.display = "none";
+      document.getElementById("appBar").style.display = "flex";
+      document.getElementById("navTabs").style.display = "flex";
+      document.getElementById("mainContent").style.display = "block";
+      statsData = d;
+      renderKPI(d);
+      loadDeptChart();
+      loadEnrollments();
+    })
+    .catch(() => { document.getElementById("loginErr").textContent = "連線失敗，請稍後再試"; });
+}
+
+document.getElementById("loginToken").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+
+function doLogout() {
+  ADMIN_TOKEN = "";
+  document.getElementById("loginToken").value = "";
+  document.getElementById("loginErr").textContent = "";
+  document.getElementById("loginOverlay").style.display = "flex";
+  document.getElementById("appBar").style.display = "none";
+  document.getElementById("navTabs").style.display = "none";
+  document.getElementById("mainContent").style.display = "none";
+}
+
+// ── Page Switch ──
+function switchPage(name, btn) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+  document.getElementById("page-" + name).classList.add("active");
+  btn.classList.add("active");
+  if (name === "attendance") loadAttendance();
+}
+
+// ── KPI ──
+function renderKPI(d) {
+  document.getElementById("lastUpdate").textContent = "最後更新：" + new Date().toLocaleString("zh-TW");
+  document.getElementById("kpiGrid").innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">報名總數</div>
+      <div class="kpi-value">${d.totalEnrollments}</div>
+      <div class="kpi-sub">含候補 ${d.waitlistCount} 人</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">已確認報名</div>
+      <div class="kpi-value">${d.confirmed}</div>
+      <div class="kpi-sub">已取消 ${d.cancelled} 人</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">候補人數</div>
+      <div class="kpi-value">${d.waitlistCount}</div>
+      <div class="kpi-sub">等待空位釋出</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">開課數</div>
+      <div class="kpi-value">${d.totalCourses}</div>
+      <div class="kpi-sub">115年度</div>
+    </div>
+    <div class="kpi-card ${d.attendanceRate >= 80 ? 'green' : d.attendanceRate >= 60 ? 'amber' : 'red'}">
+      <div class="kpi-label">出席率</div>
+      <div class="kpi-value">${d.attendanceRate}%</div>
+      <div class="kpi-sub">${d.attended} / ${d.totalAttend} 人</div>
+    </div>`;
+}
+
+// ── Dept Chart ──
+function loadDeptChart() {
+  fetch(`${APPS_SCRIPT_URL}?action=getDeptBreakdown&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.breakdown || !d.breakdown.length) {
+        document.getElementById("deptChart").innerHTML = '<div class="empty"><div class="icon">📭</div>尚無資料</div>';
+        return;
+      }
+      const max = d.breakdown[0].count;
+      document.getElementById("deptChart").innerHTML = d.breakdown.map(item => `
+        <div class="bar-row">
+          <div class="bar-label" title="${item.dept}">${item.dept}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${Math.round(item.count/max*100)}%">
+              <span>${item.count}</span>
+            </div>
+          </div>
+        </div>`).join("");
+
+      // Status chart from statsData
+      const total = statsData.confirmed + statsData.cancelled + (statsData.waitlistCount || 0);
+      const items = [
+        { label: "已確認", count: statsData.confirmed, color: "#16a34a" },
+        { label: "候補中", count: statsData.waitlistCount, color: "#d97706" },
+        { label: "已取消", count: statsData.cancelled, color: "#dc2626" }
+      ].filter(x => x.count > 0);
+      document.getElementById("statusChart").innerHTML = items.map(item => `
+        <div class="bar-row">
+          <div class="bar-label">${item.label}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${total ? Math.round(item.count/total*100) : 0}%;background:${item.color}">
+              <span>${item.count}</span>
+            </div>
+          </div>
+        </div>`).join("");
+    })
+    .catch(() => {
+      document.getElementById("deptChart").innerHTML = '<div class="empty">載入失敗</div>';
+    });
+}
+
+// ── Enrollments ──
+function loadEnrollments() {
+  document.getElementById("enrollTable").innerHTML = '<div class="loading-wrap"><div class="spinner"></div>載入中...</div>';
+  fetch(`${APPS_SCRIPT_URL}?action=getAllEnrollments&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+    .then(r => r.json())
+    .then(d => {
+      allEnrollData = d.enrollments || [];
+      filterTable();
+    })
+    .catch(() => {
+      document.getElementById("enrollTable").innerHTML = '<div class="empty">載入失敗，請重新整理</div>';
+    });
+}
+
+const STATUS_LABEL = { confirmed: "已確認", cancelled: "已取消", waiting: "候補中" };
+const STATUS_CLASS  = { confirmed: "badge-confirmed", cancelled: "badge-cancelled", waiting: "badge-waiting" };
+
+function filterTable() {
+  const q    = document.getElementById("searchName").value.toLowerCase();
+  const st   = document.getElementById("filterStatus").value;
+  const dept = document.getElementById("filterDeptAdmin").value;
+
+  const rows = allEnrollData.filter(r => {
+    if (q && !r.name.toLowerCase().includes(q) && !r.empId.includes(q)) return false;
+    if (st && r.status !== st) return false;
+    if (dept && r.dept !== dept) return false;
+    return true;
+  });
+
+  document.getElementById("enrollCount").textContent = `共 ${rows.length} 筆`;
+  if (!rows.length) {
+    document.getElementById("enrollTable").innerHTML = '<div class="empty"><div class="icon">📭</div>查無符合條件的記錄</div>';
+    return;
+  }
+
+  document.getElementById("enrollTable").innerHTML = `
+    <table>
+      <thead><tr>
+        <th>報名ID</th><th>課程名稱</th><th>員工編號</th><th>姓名</th>
+        <th>部門</th><th>Email</th><th>狀態</th><th>報名時間</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `<tr>
+          <td style="font-size:11px;color:var(--muted)">${r.enrollId}</td>
+          <td>${r.courseTitle}</td>
+          <td>${r.empId}</td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.dept}</td>
+          <td style="font-size:12px">${r.email}</td>
+          <td><span class="badge ${STATUS_CLASS[r.status] || ''}">${STATUS_LABEL[r.status] || r.status}</span></td>
+          <td style="font-size:12px;color:var(--muted)">${r.timestamp}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table>`;
+}
+
+// ── Attendance ──
+function loadAttendance() {
+  document.getElementById("attendTable").innerHTML = '<div class="loading-wrap"><div class="spinner"></div>載入中...</div>';
+  fetch(`${APPS_SCRIPT_URL}?action=getAllEnrollments&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+    .then(r => r.json())
+    .then(d => {
+      allAttendData = d.enrollments || [];
+      // populate course filter
+      const courses = [...new Set(allAttendData.map(r => r.courseTitle))];
+      const sel = document.getElementById("attendCourseFilter");
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">全部課程</option>' + courses.map(c => `<option ${c===cur?'selected':''}>${c}</option>`).join("");
+      renderAttendTable();
+    })
+    .catch(() => {
+      document.getElementById("attendTable").innerHTML = '<div class="empty">載入失敗</div>';
+    });
+}
+
+function renderAttendTable() {
+  const course = document.getElementById("attendCourseFilter").value;
+  const rows = allAttendData.filter(r => !course || r.courseTitle === course);
+  document.getElementById("attendCount").textContent = `共 ${rows.length} 筆`;
+  if (!rows.length) {
+    document.getElementById("attendTable").innerHTML = '<div class="empty"><div class="icon">📭</div>查無記錄</div>';
+    return;
+  }
+  document.getElementById("attendTable").innerHTML = `
+    <table>
+      <thead><tr><th>課程名稱</th><th>員工編號</th><th>姓名</th><th>部門</th><th>Email</th><th>狀態</th></tr></thead>
+      <tbody>
+        ${rows.map(r => `<tr>
+          <td>${r.courseTitle}</td>
+          <td>${r.empId}</td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.dept}</td>
+          <td style="font-size:12px">${r.email}</td>
+          <td><span class="badge badge-confirmed">已確認</span></td>
+        </tr>`).join("")}
+      </tbody>
+    </table>`;
+}
+
+// ── Export Excel ──
+function exportExcel() {
+  if (!allEnrollData.length) { alert("尚無報名資料可匯出"); return; }
+  const q    = document.getElementById("searchName")?.value?.toLowerCase() || "";
+  const st   = document.getElementById("filterStatus")?.value || "";
+  const dept = document.getElementById("filterDeptAdmin")?.value || "";
+  const rows = allEnrollData.filter(r => {
+    if (q && !r.name.toLowerCase().includes(q) && !r.empId.includes(q)) return false;
+    if (st && r.status !== st) return false;
+    if (dept && r.dept !== dept) return false;
+    return true;
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows.map(r => ({
+    "報名ID": r.enrollId,
+    "課程名稱": r.courseTitle,
+    "員工編號": r.empId,
+    "姓名": r.name,
+    "部門": r.dept,
+    "Email": r.email,
+    "狀態": STATUS_LABEL[r.status] || r.status,
+    "主管": r.manager,
+    "報名時間": r.timestamp
+  })));
+  XLSX.utils.book_append_sheet(wb, ws, "報名名單");
+  XLSX.writeFile(wb, `TTQS報名名單_${today()}.xlsx`);
+}
+
+function exportAttendExcel() {
+  if (!allAttendData.length) { alert("尚無出席資料可匯出"); return; }
+  const course = document.getElementById("attendCourseFilter")?.value || "";
+  const rows = allAttendData.filter(r => !course || r.courseTitle === course);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows.map(r => ({
+    "課程名稱": r.courseTitle,
+    "員工編號": r.empId,
+    "姓名": r.name,
+    "部門": r.dept,
+    "Email": r.email,
+    "出席狀態": "已確認報名"
+  })));
+  XLSX.utils.book_append_sheet(wb, ws, "出席記錄");
+  XLSX.writeFile(wb, `TTQS出席記錄_${today()}.xlsx`);
+}
+
+function exportStatsExcel() {
+  const s = statsData;
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["TTQS 115年度 訓練成效統計"],
+    [],
+    ["項目", "數值"],
+    ["報名總數", s.totalEnrollments],
+    ["已確認報名", s.confirmed],
+    ["候補人數", s.waitlistCount],
+    ["已取消", s.cancelled],
+    ["開課總數", s.totalCourses],
+    ["出席率", s.attendanceRate + "%"],
+    ["出席人次", s.attended],
+    [],
+    ["匯出時間", new Date().toLocaleString("zh-TW")]
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws, "成效統計");
+  XLSX.writeFile(wb, `TTQS成效統計_${today()}.xlsx`);
+}
+
+function exportCoursesExcel() {
+  fetch(`${APPS_SCRIPT_URL}?action=getCourses`)
+    .then(r => r.json())
+    .then(d => {
+      const courses = d.courses || [];
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(courses.map(c => ({
+        "課程ID": c.id,
+        "課程名稱": c.title,
+        "講師": c.instructor,
+        "課程日期": c.date,
+        "上課時間": c.time,
+        "名額上限": c.capacity,
+        "已報名人數": c.enrolled,
+        "上課地點": c.location,
+        "適用部門": c.dept,
+        "課程說明": c.description
+      })));
+      XLSX.utils.book_append_sheet(wb, ws, "課程清單");
+      XLSX.writeFile(wb, `TTQS課程清單_${today()}.xlsx`);
+    });
+}
+
+function today() {
+  return new Date().toISOString().slice(0,10).replace(/-/g,"");
+}
+</script>
+</body>
+</html>
