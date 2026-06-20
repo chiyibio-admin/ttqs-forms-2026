@@ -726,16 +726,13 @@ function showSuccess(name, c, isWaitlist) {
 }
 
 function showDetail(courseId) {
-  const c = allCourses.find(x => x.id === courseId);
+  var c = allCourses.find(function(x){ return x.id === courseId; });
   if (!c) return;
-  alert("📋 課程說明
-
-" + c.title + "
-
-" + c.description + "
-
-📅 " + c.date + " " + c.time + "
-📍 " + c.location);
+  var msg = '[詳情] ' + c.title;
+  msg += '\n\n' + c.description;
+  msg += '\n\n📅 ' + c.date + ' ' + c.time;
+  msg += '\n📍 ' + c.location;
+  alert(msg);
 }
 
 // ── My Records Query ──
