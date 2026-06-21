@@ -895,7 +895,13 @@ function filterCourses() {
   });
 
   // 依日期升冪排列（日期早的在前，無日期排最後）
+  // 排序：報名中 → 候補中 → 已截止，同狀態內依日期升冪
+  var statusOrder = { "open": 0, "waitlist": 1, "closed": 2 };
   filtered.sort(function(a, b) {
+    var sa = statusOrder[a.status] !== undefined ? statusOrder[a.status] : 1;
+    var sb = statusOrder[b.status] !== undefined ? statusOrder[b.status] : 1;
+    if (sa !== sb) return sa - sb;
+    // 同狀態：日期早的在前
     if (!a.date && !b.date) return 0;
     if (!a.date) return 1;
     if (!b.date) return -1;
