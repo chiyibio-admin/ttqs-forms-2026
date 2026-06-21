@@ -15,29 +15,21 @@
 body{font-family:"Microsoft JhengHei","Noto Sans TC",Arial,sans-serif;
   background:var(--bg);color:var(--text);padding:28px 16px;min-height:100vh}
 .wrap{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-
-/* 表頭 */
 .hdr{background:var(--accent);border-radius:14px;
   padding:36px 32px 28px;text-align:center;
   box-shadow:0 4px 16px rgba(26,86,219,.25)}
 .hdr h1{font-size:1.7rem;font-weight:600;color:#fff;margin-bottom:0}
-
-/* 卡片 */
 .card{background:var(--card);border-radius:12px;padding:22px 24px;
   box-shadow:var(--shadow);border:1px solid var(--border)}
 .card-title{font-size:.97rem;font-weight:700;color:var(--accent);
   margin-bottom:16px;padding-bottom:10px;
   border-bottom:2px solid var(--accent);
   display:flex;align-items:center;gap:6px}
-
-/* 格線 */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .full{grid-column:1/-1}
 .f{display:flex;flex-direction:column;gap:5px}
 label{font-size:.9rem;color:var(--muted);font-weight:500}
 label .r{color:var(--req);margin-left:2px}
-
-/* 輸入框 */
 input[type=text],input[type=date],select,textarea{
   background:#fff;border:1.5px solid var(--border);border-radius:8px;
   padding:10px 13px;font-size:1rem;color:var(--text);width:100%;
@@ -46,36 +38,15 @@ input:focus,select:focus,textarea:focus{
   outline:none;border-color:var(--accent);
   box-shadow:0 0 0 3px rgba(26,86,219,.1)}
 textarea{min-height:96px;resize:vertical;line-height:1.6}
-
-/* 量表（新格式） */
-.scale-wrap{background:#f8faff;border-radius:10px;padding:14px 16px}
-.scale-labels{display:flex;justify-content:space-between;
-  font-size:.85rem;color:var(--muted);margin-bottom:10px}
-.scale-btns{display:flex;gap:8px}
-
-/* 量表（舊格式相容） */
 .scale-row{background:#f8faff;border-radius:10px;padding:14px 16px;
   display:flex;align-items:center;gap:8px}
 .scale-lbl{font-size:.85rem;color:var(--muted);flex:0 0 auto;white-space:nowrap}
 .scale-mid{display:flex;gap:8px;flex:1}
-
 .sc{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
 .sc span{font-size:.9rem;color:var(--muted);font-weight:600}
 .sc input{width:18px;height:18px;cursor:pointer;accent-color:var(--accent)}
-
-/* 選項 */
-.choices{display:flex;flex-direction:column;gap:8px}
-.ci{display:flex;align-items:center;gap:10px;font-size:1rem;
-  padding:9px 12px;border-radius:8px;cursor:pointer;
-  border:1.5px solid var(--border);transition:all .15s;}
-.ci:hover{border-color:var(--accent);background:#f8faff}
-.ci input{width:16px;height:16px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
-
-/* 說明框 */
-.info-bar,.info{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;
+.info{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;
   padding:11px 18px;text-align:center;font-size:.93rem;color:#1e40af}
-
-/* 送出 */
 .sub-wrap{text-align:center;padding:4px 0}
 .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;
   padding:14px 56px;font-size:1.1rem;font-weight:600;cursor:pointer;
@@ -83,17 +54,11 @@ textarea{min-height:96px;resize:vertical;line-height:1.6}
   box-shadow:0 4px 12px rgba(26,86,219,.3)}
 .btn:hover{background:#1441b8;box-shadow:0 6px 16px rgba(26,86,219,.4);transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
-
-/* 完成畫面 */
 #ok{display:none;background:#fff;border:1.5px solid #10b981;border-radius:14px;
   padding:40px;text-align:center}
-#ok .ok-icon{font-size:3rem;margin-bottom:12px}
 #ok h2{font-size:1.5rem;color:#065f46;margin-bottom:8px}
 #ok p{font-size:1rem;color:#64748b}
-
-/* 頁尾 */
 .footer{text-align:center;font-size:.84rem;color:#94a3b8;padding:8px 0 16px;line-height:1.8}
-
 @media(max-width:580px){
   .grid{grid-template-columns:1fr}
   .hdr{padding:28px 20px 22px}
@@ -104,43 +69,222 @@ textarea{min-height:96px;resize:vertical;line-height:1.6}
 <body>
 <div class="wrap">
 
-  <!-- 表頭 -->
   <div class="hdr">
     <h1>滿意度調查表（L1反應評估）</h1>
   </div>
 
-  <!-- 評分說明（僅含量表的表單顯示） -->
   <div class="info">評分標準：5=非常同意 &nbsp;4=同意 &nbsp;3=普通 &nbsp;2=不同意 &nbsp;1=非常不同意</div>
 
-  <!-- 表單主體 -->
   <form id="mainForm" onsubmit="submitForm(event)">
-    <div class="card"><div class="card-title">📋 基本資訊</div><div class="grid"><div class="f"><label for="_____0">填寫日期<span class="r">*</span></label><input type="date" id="_____0" name="_____0" required></div><div class="f"><label for="_____1">課程名稱<span class="r">*</span></label><input type="text" id="_____1" name="_____1" placeholder="請輸入" required></div><div class="f"><label for="__________2">學員姓名（可匿名）</label><input type="text" id="__________2" name="__________2" placeholder="請輸入" ></div><div class="f"><label for="___3">部門<span class="r">*</span></label><select id="___3" name="___3" required><option value="">請選擇</option><option>人事部</option><option>企劃部</option><option>財務部</option><option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option><option>其他</option></select></div></div></div><div class="card"><div class="card-title">⭐ 評估評分（1=非常不足 / 5=非常充足）</div><div class="grid"><div class="f full"><label for="___________0">課程內容與工作相關性<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="___________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="___________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="___________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="___________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="___________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="___________0">課程內容充實度與深度<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="___________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="___________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="___________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="___________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="___________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="card-title">📝 填寫內容</div><div class="grid"><div class="f full"><label for="_________0">講師教學表達能力<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="_________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="_________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="_________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="_________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="_________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="__________0">講師與學員互動情況<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="__________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="__________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="__________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="__________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="__________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="card-title">📐 課程設計內容</div><div class="grid"><div class="f full"><label for="_________0">教材品質與實用性<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="_________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="_________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="_________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="_________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="_________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="card-title">📝 填寫內容</div><div class="grid"><div class="f full"><label for="________0">訓練場地與設備<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="__________0">課程時間安排合理性<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="__________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="__________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="__________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="__________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="__________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="card-title">⭐ 評估評分（1=非常不足 / 5=非常充足）</div><div class="grid"><div class="f full"><label for="________0">整體課程滿意度<span class="r">*</span></label><div class="scale-row"><span class="scale-lbl">1 不足</span><div class="scale-mid"><div class="sc"><span>1</span><input type="radio" name="________0" value="1" required></div><div class="sc"><span>2</span><input type="radio" name="________0" value="2" required></div><div class="sc"><span>3</span><input type="radio" name="________0" value="3" required></div><div class="sc"><span>4</span><input type="radio" name="________0" value="4" required></div><div class="sc"><span>5</span><input type="radio" name="________0" value="5" required></div></div><span class="scale-lbl right">5 充足</span></div></div></div></div><div class="card"><div class="card-title">📝 填寫內容</div><div class="grid"><div class="f full"><label for="_____________0">本課程最有價值的內容是？<span class="r">*</span></label><textarea id="_____________0" name="_____________0" placeholder="請輸入..." required></textarea></div></div></div><div class="card"><div class="grid"><div class="f full"><label for="____________0">本課程需要改善的地方？</label><textarea id="____________0" name="____________0" placeholder="請輸入..." ></textarea></div></div></div><div class="card"><div class="card-title">💬 意見與建議</div><div class="grid"><div class="f full"><label for="____________0">希望未來增加的訓練主題</label><textarea id="____________0" name="____________0" placeholder="請輸入..." ></textarea></div></div></div>
+
+    <!-- 基本資訊 -->
+    <div class="card">
+      <div class="card-title">📋 基本資訊</div>
+      <div class="grid">
+        <div class="f">
+          <label for="f_date">填寫日期<span class="r">*</span></label>
+          <input type="date" id="f_date" name="f_date" required>
+        </div>
+        <div class="f">
+          <label for="f_course">課程名稱<span class="r">*</span></label>
+          <input type="text" id="f_course" name="f_course" placeholder="請輸入" required>
+        </div>
+        <div class="f">
+          <label for="f_name">學員姓名（可匿名）</label>
+          <input type="text" id="f_name" name="f_name" placeholder="請輸入">
+        </div>
+        <div class="f">
+          <label for="f_dept">部門<span class="r">*</span></label>
+          <select id="f_dept" name="f_dept" required>
+            <option value="">請選擇</option>
+            <option>人事部</option><option>企劃部</option><option>財務部</option>
+            <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option>
+            <option>決策部</option><option>其他</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 課程內容評分 -->
+    <div class="card">
+      <div class="card-title">📚 課程內容評分</div>
+      <div class="grid">
+        <div class="f full">
+          <label>課程內容與工作相關性<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_01" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_01" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_01" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_01" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_01" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+        <div class="f full">
+          <label>課程內容充實度與深度<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_02" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_02" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_02" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_02" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_02" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 講師評分 -->
+    <div class="card">
+      <div class="card-title">🎤 講師評分</div>
+      <div class="grid">
+        <div class="f full">
+          <label>講師教學表達能力<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_03" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_03" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_03" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_03" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_03" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+        <div class="f full">
+          <label>講師與學員互動情況<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_04" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_04" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_04" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_04" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_04" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 教材與場地評分 -->
+    <div class="card">
+      <div class="card-title">📐 教材與場地評分</div>
+      <div class="grid">
+        <div class="f full">
+          <label>教材品質與實用性<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_05" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_05" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_05" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_05" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_05" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+        <div class="f full">
+          <label>訓練場地與設備<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_06" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_06" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_06" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_06" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_06" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+        <div class="f full">
+          <label>課程時間安排合理性<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_07" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_07" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_07" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_07" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_07" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 整體評分 -->
+    <div class="card">
+      <div class="card-title">⭐ 整體評分</div>
+      <div class="grid">
+        <div class="f full">
+          <label>整體課程滿意度<span class="r">*</span></label>
+          <div class="scale-row">
+            <span class="scale-lbl">1 不足</span>
+            <div class="scale-mid">
+              <div class="sc"><span>1</span><input type="radio" name="scale_08" value="1" required></div>
+              <div class="sc"><span>2</span><input type="radio" name="scale_08" value="2"></div>
+              <div class="sc"><span>3</span><input type="radio" name="scale_08" value="3"></div>
+              <div class="sc"><span>4</span><input type="radio" name="scale_08" value="4"></div>
+              <div class="sc"><span>5</span><input type="radio" name="scale_08" value="5"></div>
+            </div>
+            <span class="scale-lbl">5 充足</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 意見與建議 -->
+    <div class="card">
+      <div class="card-title">💬 意見與建議</div>
+      <div class="grid">
+        <div class="f full">
+          <label for="f_best">本課程最有價值的內容是？<span class="r">*</span></label>
+          <textarea id="f_best" name="f_best" placeholder="請輸入..." required></textarea>
+        </div>
+        <div class="f full">
+          <label for="f_improve">本課程需要改善的地方？</label>
+          <textarea id="f_improve" name="f_improve" placeholder="請輸入..."></textarea>
+        </div>
+        <div class="f full">
+          <label for="f_future">希望未來增加的訓練主題</label>
+          <textarea id="f_future" name="f_future" placeholder="請輸入..."></textarea>
+        </div>
+      </div>
+    </div>
+
     <div class="sub-wrap">
       <button type="submit" class="btn">送出表單</button>
     </div>
   </form>
 
-  <!-- 成功訊息 -->
   <div id="ok">
     <h2>✅ 填寫完成！</h2>
     <p>感謝您的填寫，回覆已成功送出。</p>
     <p style="margin-top:8px;font-size:.85rem;color:#047857">奇異生技股份有限公司 訓練部門</p>
   </div>
 
-  <!-- 頁尾 -->
-
   <div class="footer">
     滿意度調查表（L1反應評估）<br>
     奇異生技股份有限公司 · 115年度訓練品質管理<br>
     O-002 · O成果 · 指標17、18
   </div>
-
 </div>
 
 <script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxVJsHr-QgDlU53xABVoYrklRgUN8wXjJfXE1LGbH1BtVvjbZFvAywr9vsUQJi_Runx/exec';
 const FORM_CODE = 'O-002';
-const FIELD_IDS = ["_____0","_____1","__________2","___3","___________4","___________5","_________6","__________7","_________8","________9","__________10","________11","_____________12","____________13","____________14"];
 
 async function submitForm(e) {
   e.preventDefault();
@@ -149,7 +293,6 @@ async function submitForm(e) {
   btn.textContent = '送出中...';
   btn.disabled    = true;
 
-  // 收集資料（欄位標籤 → 值）
   const data = {
     formCode:   FORM_CODE,
     submitTime: new Date().toLocaleString('zh-TW')
@@ -158,21 +301,19 @@ async function submitForm(e) {
   form.querySelectorAll('.f').forEach(function(field) {
     const labelEl = field.querySelector('label');
     if (!labelEl) return;
-    // 取標籤文字，去除必填星號與多餘空白
     const labelText = labelEl.textContent.replace(/[\*＊]/g, '').trim();
     if (!labelText) return;
 
-    const radios    = field.querySelectorAll('input[type="radio"]');
-    const checkboxes= field.querySelectorAll('input[type="checkbox"]');
-    const selects   = field.querySelectorAll('select');
-    const texts     = field.querySelectorAll('input[type="text"], input[type="date"], textarea');
+    const radios     = field.querySelectorAll('input[type="radio"]');
+    const checkboxes = field.querySelectorAll('input[type="checkbox"]');
+    const selects    = field.querySelectorAll('select');
+    const texts      = field.querySelectorAll('input[type="text"], input[type="date"], textarea');
 
     if (radios.length) {
       const checked = field.querySelector('input[type="radio"]:checked');
       data[labelText] = checked ? checked.value : '';
     } else if (checkboxes.length) {
-      const vals = Array.from(field.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
-      data[labelText] = vals.join('、');
+      data[labelText] = Array.from(field.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value).join('、');
     } else if (selects.length) {
       data[labelText] = selects[0].value;
     } else if (texts.length) {
@@ -180,12 +321,11 @@ async function submitForm(e) {
     }
   });
 
-  // 送出到 GAS Web App
   if (GAS_URL) {
     try {
       fetch(GAS_URL, {
         method:  'POST',
-        mode:    'no-cors',   // GAS 跨域需使用 no-cors
+        mode:    'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body:    JSON.stringify(data)
       });
@@ -194,7 +334,6 @@ async function submitForm(e) {
     }
   }
 
-  // no-cors 無法讀取回應，直接顯示成功畫面
   setTimeout(function() {
     form.style.display = 'none';
     document.getElementById('ok').style.display = 'block';
