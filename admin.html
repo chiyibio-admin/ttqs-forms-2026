@@ -186,6 +186,16 @@
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
   .modal-overlay:not(.open) { pointer-events: none; }
 
+  /* ── QR Modal ── */
+  .qr-modal-inner { text-align: center; }
+  .qr-course-name { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+  .qr-course-meta { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .qr-img-wrap { background: white; border: 2px solid var(--border); border-radius: 12px; display: inline-flex; padding: 12px; margin-bottom: 16px; }
+  .qr-img-wrap img { width: 200px; height: 200px; display: block; }
+  .qr-url-box { background: var(--bg); border-radius: 8px; padding: 10px 14px; font-size: 11px; font-family: monospace; color: var(--muted); word-break: break-all; margin-bottom: 14px; cursor: pointer; }
+  .qr-url-box:hover { background: #e2e8f0; }
+  .qr-hint { font-size: 12px; color: var(--muted); }
+
   /* ── Effectiveness Tab ── */
   .eff-header { background: linear-gradient(135deg, #1a3c6e 0%, #2d5fa3 100%); border-radius: 14px; padding: 24px 28px; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 24px; }
   .eff-header-text h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
@@ -486,6 +496,29 @@
     </div>
   </div>
 
+</div>
+
+<!-- ── QR Modal ── -->
+<div class="modal-overlay" id="qrModal" onclick="if(event.target===this)closeQRModal()">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-title">
+      <span>📱 課程簽到 QR Code</span>
+      <button class="modal-close" onclick="closeQRModal()">✕</button>
+    </div>
+    <div class="qr-modal-inner">
+      <div class="qr-course-name" id="qrCourseName"></div>
+      <div class="qr-course-meta" id="qrCourseMeta"></div>
+      <div class="qr-img-wrap">
+        <img id="qrImg" src="" alt="QR Code">
+      </div>
+      <div class="qr-url-box" id="qrUrlBox" onclick="copyQRUrl()" title="點擊複製連結"></div>
+      <div class="qr-hint">⬆ 點擊複製連結 · 列印或截圖此 QR 供學員掃描</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="printQR()">🖨 列印</button>
+      <button class="btn btn-primary" onclick="closeQRModal()">關閉</button>
+    </div>
+  </div>
 </div>
 
 <!-- ── Course Modal ── -->
@@ -878,6 +911,66 @@ function exportCoursesExcel() {
 }
 
 // ════════════════════════════════════════════
+// QR Code 簽到
+// ════════════════════════════════════════════
+const CHECKIN_BASE = "https://chiyibio-admin.github.io/ttqs-forms-2026/checkin.html";
+
+function openQRModal(courseId, title, date, time, location) {
+  const url = `${CHECKIN_BASE}?courseId=${encodeURIComponent(courseId)}`;
+  const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(url)}`;
+
+  document.getElementById("qrCourseName").textContent = title;
+  document.getElementById("qrCourseMeta").textContent =
+    [date, time, location].filter(Boolean).join("　·　");
+  document.getElementById("qrImg").src = qrApi;
+  document.getElementById("qrUrlBox").textContent = url;
+  document.getElementById("qrUrlBox").dataset.url = url;
+  document.getElementById("qrModal").classList.add("open");
+}
+
+function closeQRModal() {
+  document.getElementById("qrModal").classList.remove("open");
+}
+
+function copyQRUrl() {
+  const url = document.getElementById("qrUrlBox").dataset.url;
+  navigator.clipboard.writeText(url).then(() => {
+    const box = document.getElementById("qrUrlBox");
+    const orig = box.textContent;
+    box.textContent = "✅ 已複製！";
+    setTimeout(() => { box.textContent = orig; }, 1800);
+  });
+}
+
+function printQR() {
+  const name  = document.getElementById("qrCourseName").textContent;
+  const meta  = document.getElementById("qrCourseMeta").textContent;
+  const imgSrc = document.getElementById("qrImg").src;
+  const url   = document.getElementById("qrUrlBox").dataset.url;
+  const win = window.open("", "_blank", "width=500,height=600");
+  win.document.write(`
+    <html><head><title>課程簽到 QR — ${name}</title>
+    <style>
+      body { font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif; text-align:center; padding:40px; }
+      h2 { font-size:20px; color:#1a3c6e; margin-bottom:6px; }
+      p  { font-size:13px; color:#64748b; margin-bottom:20px; }
+      img { width:220px; height:220px; border:2px solid #e2e8f0; border-radius:8px; padding:8px; }
+      .url { font-size:10px; color:#94a3b8; word-break:break-all; margin-top:14px; }
+      .hint { font-size:12px; color:#475569; margin-top:12px; }
+    </style></head>
+    <body onload="window.print()">
+      <p style="font-size:12px;color:#94a3b8">奇異生技股份有限公司 · TTQS 115年度</p>
+      <h2>${name}</h2>
+      <p>${meta}</p>
+      <img src="${imgSrc}">
+      <div class="url">${url}</div>
+      <div class="hint">📱 請用手機掃描 QR Code 完成簽到</div>
+    </body></html>
+  `);
+  win.document.close();
+}
+
+// ════════════════════════════════════════════
 // 取消報名（管理者）
 // ════════════════════════════════════════════
 function adminCancelEnrollment(enrollId, name, courseTitle) {
@@ -949,7 +1042,9 @@ function filterCourseMgmt() {
           <td>${c.dept || '全部'}</td>
           <td><span class="badge ${COURSE_STATUS_CLASS[c.status] || ''}">${COURSE_STATUS_LABEL[c.status] || c.status}</span></td>
           <td style="text-align:center;white-space:nowrap">
-            <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;margin-right:4px"
+            <button class="btn" style="padding:5px 10px;font-size:12px;background:#ede9fe;color:#5b21b6;border:none;margin-right:3px"
+              onclick="openQRModal('${c.id}','${c.title.replace(/'/g,"\\'")}','${c.date||''}','${c.time||''}','${c.location||''}')">📱 QR</button>
+            <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;margin-right:3px"
               onclick="openCourseModal('${c.id}')">✏️ 編輯</button>
             <button class="btn" style="padding:5px 12px;font-size:12px;background:#fee2e2;color:#dc2626;border:none"
               onclick="confirmDeleteCourse('${c.id}','${c.title.replace(/'/g,"\\'")}')">🗑</button>
