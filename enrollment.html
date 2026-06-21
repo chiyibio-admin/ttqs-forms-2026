@@ -259,6 +259,59 @@
   .task-link:hover { background: var(--blue-dark); }
   .task-link.disabled { background: #d1d5db; color: #9ca3af; pointer-events: none; }
 
+
+  /* ── 登入 Overlay ── */
+  .login-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-overlay.hidden { display: none; }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px 44px;
+    width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  }
+  .login-box .login-logo { font-size: 36px; text-align: center; margin-bottom: 10px; }
+  .login-box h2 { font-size: 20px; font-weight: 700; color: var(--blue-dark); text-align: center; margin-bottom: 4px; }
+  .login-box .login-sub { font-size: 12px; color: #9ca3af; text-align: center; margin-bottom: 28px; }
+  .login-box .form-group { margin-bottom: 14px; }
+  .login-box .form-label { font-size: 12px; font-weight: 700; color: var(--gray); margin-bottom: 5px; display: block; }
+  .login-box .form-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; }
+  .login-box .form-input:focus { outline: none; border-color: var(--blue-mid); }
+  .login-box .btn-login {
+    width: 100%; padding: 12px; background: var(--blue-mid); color: white;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px;
+  }
+  .login-box .btn-login:hover { background: var(--blue-dark); }
+  .login-error { color: var(--red); font-size: 12px; margin-top: 8px; text-align: center; }
+
+  /* ── User Bar（登入後顯示在 header）── */
+  .user-bar {
+    background: rgba(0,0,0,0.25); padding: 8px 32px;
+    display: flex; align-items: center; gap: 12px; font-size: 13px;
+  }
+  .user-bar.hidden { display: none; }
+  .user-info { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .user-avatar { background: var(--gold); color: white; font-size: 12px; font-weight: 700; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .user-name { font-weight: 700; color: white; }
+  .user-dept { color: rgba(255,255,255,.7); font-size: 12px; }
+  .user-empid { color: rgba(255,255,255,.5); font-size: 11px; }
+  .btn-logout-sm {
+    background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.85); padding: 5px 14px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; font-weight: 600;
+  }
+  .btn-logout-sm:hover { background: rgba(255,255,255,.22); }
+
+  /* ── 確認報名卡（登入後簡化 modal）── */
+  .confirm-card {
+    background: var(--gray-light); border-radius: 10px; padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px; border: 1.5px solid var(--border);
+  }
+  .confirm-card .avatar-lg { font-size: 28px; }
+  .confirm-card .cf-name { font-size: 15px; font-weight: 700; color: var(--blue-dark); }
+  .confirm-card .cf-sub  { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
   /* ── Footer ── */
   .site-footer { background: var(--blue-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 16px; font-size: 12px; margin-top: 48px; }
 
@@ -272,6 +325,41 @@
 </style>
 </head>
 <body>
+
+<!-- ── Login Overlay ── -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">🎓</div>
+    <h2>課程報名系統</h2>
+    <p class="login-sub">奇異生技股份有限公司 · TTQS 訓練品質管理<br>請先登入以進行課程報名</p>
+    <div class="form-group">
+      <label class="form-label">員工編號 <span class="required">*</span></label>
+      <input class="form-input" type="text" id="loginEmpId" placeholder="例：EMP001">
+    </div>
+    <div class="form-group">
+      <label class="form-label">姓名 <span class="required">*</span></label>
+      <input class="form-input" type="text" id="loginName" placeholder="請輸入真實姓名">
+    </div>
+    <div class="form-group">
+      <label class="form-label">部門 <span class="required">*</span></label>
+      <select class="form-input" id="loginDept">
+        <option value="">請選擇部門</option>
+        <option>人事部</option><option>企劃部</option><option>財務部</option>
+        <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">公司 Email <span class="required">*</span></label>
+      <input class="form-input" type="email" id="loginEmail" placeholder="your@chimax.com.tw">
+    </div>
+    <div class="form-group">
+      <label class="form-label">主管姓名（選填）</label>
+      <input class="form-input" type="text" id="loginManager" placeholder="若需主管審核請填寫">
+    </div>
+    <button class="btn-login" onclick="doLogin()">✅ 登入並開始報名</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
 
 <!-- ── Site Header ── -->
 <header class="site-header">
@@ -290,6 +378,15 @@
   </div>
   <div class="header-banner">
     📢 填寫結果將自動記錄至訓練部門 Google 試算表，確認報名後請留意確認信件。
+  </div>
+  <div class="user-bar hidden" id="userBar">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">？</div>
+      <span class="user-name" id="userDisplayName">—</span>
+      <span class="user-dept" id="userDisplayDept"></span>
+      <span class="user-empid" id="userDisplayEmpId"></span>
+    </div>
+    <button class="btn-logout-sm" onclick="doLogout()">登出</button>
   </div>
 </header>
 
@@ -311,7 +408,8 @@
     </div>
 
     <div class="toolbar">
-      <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜尋課程名稱、講師..." oninput="filterCourses()">
+      <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜尋課程名稱、講師..." onkeydown="if(event.key==='Enter')filterCourses()">
+      <button class="btn btn-primary" onclick="filterCourses()" style="white-space:nowrap">🔍 搜尋</button>
       <select class="filter-select" id="filterYear" onchange="filterCourses()" title="依年份篩選">
         <option value="">全部年份</option>
       </select>
@@ -521,6 +619,8 @@
 // CONFIG — 請在此填入你的 Apps Script Web App 網址
 // ════════════════════════════════════════════════════════
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQHBTOzGo_UCvSdtGk5b2rpdedyBe6ptBsIfxWUntSiOw5wC7leuJu1v59A1xWxRqb/exec"
+let currentUser = null; // { empId, name, dept, email, manager }
+
 // ── 課程資料 (由 Apps Script 動態載入；此為預設示範資料) ──
 let allCourses = [
   {
@@ -599,10 +699,64 @@ let allCourses = [
 let selectedCourse = null;
 
 // ── Load courses from Apps Script (if configured) ──
+// ── 登入 / 登出 ──
+function doLogin() {
+  var empId   = document.getElementById("loginEmpId").value.trim();
+  var name    = document.getElementById("loginName").value.trim();
+  var dept    = document.getElementById("loginDept").value;
+  var email   = document.getElementById("loginEmail").value.trim();
+  var manager = document.getElementById("loginManager").value.trim();
+  var errEl   = document.getElementById("loginError");
+
+  if (!empId || !name || !dept || !email) { errEl.textContent = "請填寫所有必填欄位"; return; }
+  if (!email.includes("@"))               { errEl.textContent = "請輸入正確的 Email 格式"; return; }
+
+  currentUser = { empId: empId, name: name, dept: dept, email: email, manager: manager };
+
+  // 顯示 user bar
+  document.getElementById("userAvatar").textContent = name.charAt(0);
+  document.getElementById("userDisplayName").textContent = name;
+  document.getElementById("userDisplayDept").textContent = "· " + dept;
+  document.getElementById("userDisplayEmpId").textContent = "(" + empId + ")";
+  document.getElementById("userBar").classList.remove("hidden");
+
+  // 自動填入「我的記錄」和「課後任務」查詢欄
+  var qEmpId = document.getElementById("queryEmpId");
+  var qEmail = document.getElementById("queryEmail");
+  if (qEmpId) qEmpId.value = empId;
+  if (qEmail) qEmail.value = email;
+  var tEmpId = document.getElementById("taskEmpId");
+  var tEmail = document.getElementById("taskEmail");
+  if (tEmpId) tEmpId.value = empId;
+  if (tEmail) tEmail.value = email;
+
+  // 關閉 overlay
+  document.getElementById("loginOverlay").classList.add("hidden");
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById("userBar").classList.add("hidden");
+  document.getElementById("loginEmpId").value = "";
+  document.getElementById("loginName").value = "";
+  document.getElementById("loginDept").value = "";
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginManager").value = "";
+  document.getElementById("loginError").textContent = "";
+  document.getElementById("loginOverlay").classList.remove("hidden");
+}
+
+// Enter 鍵支援登入
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Enter" && !document.getElementById("loginOverlay").classList.contains("hidden")) {
+    doLogin();
+  }
+});
+
 async function loadCourses() {
   if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
     buildYearOptions();
-    renderCourses(allCourses);
+    filterCourses();
     return;
   }
   try {
@@ -611,7 +765,7 @@ async function loadCourses() {
     if (data.courses) { allCourses = data.courses; }
   } catch(e) { console.warn("使用示範課程資料"); }
   buildYearOptions();
-  renderCourses(allCourses);
+  filterCourses();
 }
 
 // ── 自動從課程資料產生年份選單 ──
@@ -728,9 +882,10 @@ function filterCourses() {
     if (dept && c.dept !== dept && !(dept === "全體" && c.dept === "全體")) return false;
     // 狀態
     if (status && c.status !== status) return false;
-    // 年份（民國年 → 比對課程日期西元年）
-    if (yearRoc && c.date) {
-      var courseYear = c.date.substring(0, 4); // "2026"
+    // 年份（民國年 → 比對課程日期西元年；有選年份但課程無日期 → 排除）
+    if (yearRoc) {
+      if (!c.date) return false;
+      var courseYear = c.date.substring(0, 4);
       if (courseYear !== String(rocToGregorian(yearRoc))) return false;
     }
     // 日期區間
@@ -739,7 +894,15 @@ function filterCourses() {
     return true;
   });
 
-  // 更新年份標籤
+  // 依日期升冪排列（日期早的在前，無日期排最後）
+  filtered.sort(function(a, b) {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
+  });
+
+  // 更新計數標籤
   var yearLabel = yearRoc ? yearRoc + "年（" + rocToGregorian(yearRoc) + "）" : "全部年份";
   var countEl = document.getElementById("courseCountLabel");
   if (countEl) countEl.textContent = "顯示 " + filtered.length + " 門課程 · " + yearLabel;
@@ -755,7 +918,8 @@ function openRegModal(courseId) {
   const isWaitlist = c.status === "waitlist";
 
   document.getElementById("modalTitle").textContent = isWaitlist ? "加入候補名單" : "課程報名";
-  document.getElementById("modalBody").innerHTML = `
+
+  const courseSummary = `
     <div class="course-summary">
       <h3>${c.title}</h3>
       <div class="info-row">
@@ -765,7 +929,24 @@ function openRegModal(courseId) {
       </div>
       <p style="margin-top:8px;font-size:13px;color:#374151">${c.description}</p>
     </div>
-    ${isWaitlist ? `<div class="alert alert-warn">⚠️ 此課程目前額滿，加入候補名單後，有空位時系統將自動以 Email 通知您。</div>` : ""}
+    ${isWaitlist ? '<div class="alert alert-warn">⚠️ 此課程目前額滿，加入候補名單後，有空位時系統將自動以 Email 通知您。</div>' : ""}`;
+
+  if (currentUser) {
+    // ── 已登入：直接確認身份即可報名 ──
+    document.getElementById("modalBody").innerHTML = courseSummary
+      + '<div class="confirm-card">'
+      + '<div class="avatar-lg">👤</div>'
+      + '<div><div class="cf-name">' + currentUser.name + '</div>'
+      + '<div class="cf-sub">' + currentUser.dept + ' · ' + currentUser.empId + ' · ' + currentUser.email + '</div></div>'
+      + '</div>'
+      + '<div class="modal-footer">'
+      + '<button class="btn btn-cancel" style="flex:0;padding:9px 20px" onclick="closeModal()">取消</button>'
+      + '<button class="btn btn-primary" style="flex:0;padding:9px 24px" onclick="submitReg(' + isWaitlist + ')">'
+      + (isWaitlist ? "📋 加入候補" : "✅ 確認報名")
+      + '</button></div>';
+  } else {
+    // ── 未登入：顯示完整表單 ──
+    document.getElementById("modalBody").innerHTML = courseSummary + `
     <div class="form-group">
       <label class="form-label">員工編號 <span class="required">*</span></label>
       <input type="text" class="form-input" id="regEmpId" placeholder="例：EMP001" required>
@@ -778,18 +959,13 @@ function openRegModal(courseId) {
       <label class="form-label">部門 <span class="required">*</span></label>
       <select class="form-input" id="regDept">
         <option value="">請選擇部門</option>
-        <option>人事部</option>
-        <option>企劃部</option>
-        <option>財務部</option>
-        <option>營運部</option>
-        <option>HD訓練稽核部</option>
-        <option>行銷公關部</option>
-        <option>決策部</option>
+        <option>人事部</option><option>企劃部</option><option>財務部</option>
+        <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option>
       </select>
     </div>
     <div class="form-group">
       <label class="form-label">Email <span class="required">*</span></label>
-      <input type="email" class="form-input" id="regEmail" placeholder="your@email.com（確認信將寄至此信箱）" required>
+      <input type="email" class="form-input" id="regEmail" placeholder="your@email.com" required>
     </div>
     <div class="form-group">
       <label class="form-label">主管姓名（選填）</label>
@@ -801,6 +977,7 @@ function openRegModal(courseId) {
         ${isWaitlist ? "📋 加入候補" : "✅ 確認報名"}
       </button>
     </div>`;
+  }
 
   document.getElementById("regModal").classList.add("open");
 }
@@ -811,12 +988,24 @@ function closeModal() {
 }
 
 async function submitReg(isWaitlist) {
-  const empId = document.getElementById("regEmpId").value.trim();
-  const name = document.getElementById("regName").value.trim();
-  const dept = document.getElementById("regDept").value;
-  const email = document.getElementById("regEmail").value.trim();
-  if (!empId || !name || !dept || !email) { alert("請填寫所有必填欄位"); return; }
-  if (!email.includes("@")) { alert("請輸入正確的 Email"); return; }
+  var empId, name, dept, email, manager;
+  if (currentUser) {
+    // 已登入：直接使用 currentUser 資料
+    empId   = currentUser.empId;
+    name    = currentUser.name;
+    dept    = currentUser.dept;
+    email   = currentUser.email;
+    manager = currentUser.manager || "";
+  } else {
+    // 未登入：從表單讀取
+    empId   = document.getElementById("regEmpId").value.trim();
+    name    = document.getElementById("regName").value.trim();
+    dept    = document.getElementById("regDept").value;
+    email   = document.getElementById("regEmail").value.trim();
+    manager = document.getElementById("regManager")?.value || "";
+    if (!empId || !name || !dept || !email) { alert("請填寫所有必填欄位"); return; }
+    if (!email.includes("@")) { alert("請輸入正確的 Email"); return; }
+  }
 
   const c = selectedCourse;
   const payload = {
@@ -828,7 +1017,7 @@ async function submitReg(isWaitlist) {
     courseLocation: c.location,
     empId, name, dept, email,
     isWaitlist,
-    manager: document.getElementById("regManager")?.value || "",
+    manager: manager,
     timestamp: new Date().toISOString()
   };
 
