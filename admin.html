@@ -723,7 +723,7 @@ function filterTable() {
     <table>
       <thead><tr>
         <th>報名ID</th><th>課程名稱</th><th>員工編號</th><th>姓名</th>
-        <th>部門</th><th>Email</th><th>狀態</th><th>報名時間</th>
+        <th>部門</th><th>Email</th><th>狀態</th><th>報名時間</th><th style="text-align:center">操作</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `<tr>
@@ -735,6 +735,11 @@ function filterTable() {
           <td style="font-size:12px">${r.email}</td>
           <td><span class="badge ${STATUS_CLASS[r.status] || ''}">${STATUS_LABEL[r.status] || r.status}</span></td>
           <td style="font-size:12px;color:var(--muted)">${r.timestamp}</td>
+          <td style="text-align:center">${r.status === 'confirmed'
+            ? `<button class="btn" style="padding:4px 10px;font-size:11px;background:#fee2e2;color:#dc2626;border:none"
+                onclick="adminCancelEnrollment('${r.enrollId}','${r.name}','${r.courseTitle.replace(/'/g,"\\'")}')">取消</button>`
+            : '—'
+          }</td>
         </tr>`).join("")}
       </tbody>
     </table>`;
@@ -872,7 +877,21 @@ function exportCoursesExcel() {
     });
 }
 
-// ══════════════════════════════════���═════════
+// ════════════════════════════════════════════
+// 取消報名（管理者）
+// ════════════════════════════════════════════
+function adminCancelEnrollment(enrollId, name, courseTitle) {
+  if (!confirm(`確定要取消 ${name} 的「${courseTitle}」報名？\n系統將自動通知學員並遞補候補名單。`)) return;
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST", mode: "no-cors",
+    body: JSON.stringify({ action: "cancelEnrollment", token: ADMIN_TOKEN, enrollId }),
+    headers: { "Content-Type": "text/plain" }
+  })
+  .then(() => setTimeout(() => loadEnrollments(), 1400))
+  .catch(() => alert("操作失敗，請重試"));
+}
+
+// ════════════════════════════════════════════
 // 課程管理
 // ════════════════════════════════════════════
 let allCoursesMgmt = [];
