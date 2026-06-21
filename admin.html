@@ -495,6 +495,9 @@
       <span id="courseModalTitle">新增課程</span>
       <button class="modal-close" onclick="closeCourseModal()">✕</button>
     </div>
+    <div id="courseModalId" style="font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:14px;display:none">
+      課程ID：<span id="courseModalIdVal"></span>
+    </div>
     <div class="modal-grid">
       <div class="modal-field full">
         <label>課程名稱 *</label>
@@ -911,11 +914,12 @@ function filterCourseMgmt() {
   document.getElementById("courseMgmtTable").innerHTML = `
     <table>
       <thead><tr>
-        <th>課程名稱</th><th>日期 / 時間</th><th>講師</th>
+        <th>課程ID</th><th>課程名稱</th><th>日期 / 時間</th><th>講師</th>
         <th>名額</th><th>適用部門</th><th>狀態</th><th style="text-align:center">操作</th>
       </tr></thead>
       <tbody>
         ${rows.map(c => `<tr>
+          <td style="font-size:11px;color:var(--muted);font-family:monospace">${c.id}</td>
           <td>
             <strong>${c.title}</strong>
             <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.type || ''} ${c.location ? '· ' + c.location : ''}</div>
@@ -942,6 +946,8 @@ function openCourseModal(courseId) {
     const c = allCoursesMgmt.find(x => x.id === courseId);
     if (!c) return;
     document.getElementById("courseModalTitle").textContent = "編輯課程";
+    document.getElementById("courseModalIdVal").textContent = c.id;
+    document.getElementById("courseModalId").style.display = "block";
     document.getElementById("mTitle").value       = c.title || '';
     document.getElementById("mInstructor").value  = c.instructor || '';
     document.getElementById("mType").value        = c.type || '';
@@ -954,6 +960,7 @@ function openCourseModal(courseId) {
     document.getElementById("mDesc").value        = c.description || '';
   } else {
     document.getElementById("courseModalTitle").textContent = "新增課程";
+    document.getElementById("courseModalId").style.display = "none";
     ["mTitle","mInstructor","mType","mTime","mLocation","mDesc"].forEach(id =>
       document.getElementById(id).value = '');
     document.getElementById("mDate").value     = '';
