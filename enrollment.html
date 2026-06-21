@@ -312,6 +312,31 @@
   .confirm-card .cf-name { font-size: 15px; font-weight: 700; color: var(--blue-dark); }
   .confirm-card .cf-sub  { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
+
+  /* ── 需求調查 Tab ── */
+  .tna-intro { background: linear-gradient(135deg, #eff6ff, #e0f2fe); border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; }
+  .tna-intro h3 { font-size: 16px; font-weight: 700; color: var(--blue-dark); margin-bottom: 6px; }
+  .tna-intro p  { font-size: 13px; color: #374151; line-height: 1.7; }
+  .tna-phases { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .tna-phase-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; background: #1a3a5c; color: white; }
+  .tna-form-card { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 28px 32px; }
+  .tna-section-title { font-size: 13px; font-weight: 700; color: var(--blue-mid); margin: 20px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--blue-light); }
+  .tna-section-title:first-child { margin-top: 0; }
+  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+  .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; transition: all .15s; }
+  .checkbox-item:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+  .checkbox-item input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--blue-mid); cursor: pointer; }
+  .checkbox-item label { font-size: 13px; cursor: pointer; }
+  .tna-user-bar { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; font-size: 13px; color: #0369a1; display: none; }
+  .tna-user-bar.visible { display: block; }
+  .tna-submitted { text-align: center; padding: 40px 20px; }
+  .tna-submitted .icon { font-size: 48px; margin-bottom: 12px; }
+  .tna-submitted h3 { font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+  .tna-submitted p { font-size: 13px; color: #6b7280; }
+  .star-rating { display: flex; gap: 6px; }
+  .star-btn { font-size: 24px; cursor: pointer; opacity: .3; transition: opacity .15s; border: none; background: none; padding: 2px; }
+  .star-btn.active { opacity: 1; }
+
   /* ── Footer ── */
   .site-footer { background: var(--blue-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 16px; font-size: 12px; margin-top: 48px; }
 
@@ -399,6 +424,7 @@
     <button class="tab-btn" onclick="switchTab('myrecords')">📋 我的記錄</button>
     <button class="tab-btn" onclick="switchTab('forms')">📝 TTQS 表單</button>
     <button class="tab-btn" onclick="switchTab('tasks')">📚 課後任務</button>
+    <button class="tab-btn" onclick="switchTab('tna')">📊 需求調查</button>
   </div>
 
   <!-- ── Tab: 課程報名 ── -->
@@ -595,6 +621,132 @@
     <div id="taskResult"></div>
   </div>
 
+
+  <!-- ── Tab: 需求調查（TNA）── -->
+  <div id="tab-tna" class="section">
+    <div class="tna-intro">
+      <h3>📊 訓練需求調查（TNA）</h3>
+      <p>訓練需求分析（Training Needs Analysis）是 TTQS 計畫階段的核心工作，幫助訓練部門了解各部門的技能缺口與學習需求，以規劃最符合公司目標的課程。請誠實填寫，您的意見將直接影響未來的課程設計。</p>
+      <div class="tna-phases">
+        <span class="tna-phase-tag">P 計畫階段</span>
+        <span class="tna-phase-tag">TTQS 指標 5、7、9</span>
+        <span class="tna-phase-tag">對應表單 P-001</span>
+      </div>
+    </div>
+
+    <div id="tnaUserBar" class="tna-user-bar">
+      👤 已登入：<strong id="tnaUserInfo"></strong>，基本資料已自動帶入。
+    </div>
+
+    <div class="tna-form-card" id="tnaFormCard">
+      <!-- 基本資料 -->
+      <div class="tna-section-title">👤 基本資料</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group">
+          <label class="form-label">員工編號 <span class="required">*</span></label>
+          <input class="form-input" type="text" id="tnaEmpId" placeholder="例：EMP001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">姓名 <span class="required">*</span></label>
+          <input class="form-input" type="text" id="tnaName" placeholder="請輸入姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">部門 <span class="required">*</span></label>
+          <select class="form-input" id="tnaDept">
+            <option value="">請選擇</option>
+            <option>人事部</option><option>企劃部</option><option>財務部</option>
+            <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">目前職務</label>
+          <input class="form-input" type="text" id="tnaJobTitle" placeholder="例：行銷企劃專員">
+        </div>
+      </div>
+
+      <!-- 技能缺口 -->
+      <div class="tna-section-title">🎯 技能缺口與學習需求</div>
+      <div class="form-group">
+        <label class="form-label">在工作中遇到的主要困難或技能不足 <span class="required">*</span></label>
+        <textarea class="form-input" id="tnaGap" rows="3" placeholder="例：對數據分析工具不熟悉、簡報呈現能力不足..." style="resize:vertical"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:10px">希望加強的能力領域（可複選）<span class="required">*</span></label>
+        <div class="checkbox-grid" id="tnaSkillGrid">
+          <label class="checkbox-item"><input type="checkbox" value="專業技術能力"><label>🔧 專業技術能力</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="管理與領導力"><label>👔 管理與領導力</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="溝通與協作"><label>💬 溝通與協作</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="法規與認證"><label>📜 法規與認證</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="數位工具與AI"><label>💻 數位工具與AI</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="業務與市場開發"><label>📈 業務與市場開發</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="品質管理"><label>✅ 品質管理</label></label>
+          <label class="checkbox-item"><input type="checkbox" value="安全衛生"><label>⛑️ 安全衛生</label></label>
+        </div>
+      </div>
+
+      <!-- 課程建議 -->
+      <div class="tna-section-title">📚 課程建議</div>
+      <div class="form-group">
+        <label class="form-label">您希望公司開設哪些課程？</label>
+        <textarea class="form-input" id="tnaSuggest" rows="2" placeholder="例：Excel 進階應用、產品行銷策略、GMP 法規更新..." style="resize:vertical"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group">
+          <label class="form-label">偏好上課時段</label>
+          <select class="form-input" id="tnaTime">
+            <option value="">請選擇</option>
+            <option>上班時間（平日）</option>
+            <option>下班後（平日晚間）</option>
+            <option>假日</option>
+            <option>不限</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">偏好上課形式</label>
+          <select class="form-input" id="tnaFormat">
+            <option value="">請選擇</option>
+            <option>實體課程</option>
+            <option>線上課程</option>
+            <option>混合式（實體+線上）</option>
+            <option>不限</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 對現有訓練的滿意度 -->
+      <div class="tna-section-title">⭐ 對現有訓練資源的評價</div>
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:10px">整體訓練滿意度</label>
+        <div class="star-rating" id="starRating">
+          <button class="star-btn" onclick="setStar(1)">⭐</button>
+          <button class="star-btn" onclick="setStar(2)">⭐</button>
+          <button class="star-btn" onclick="setStar(3)">⭐</button>
+          <button class="star-btn" onclick="setStar(4)">⭐</button>
+          <button class="star-btn" onclick="setStar(5)">⭐</button>
+        </div>
+        <input type="hidden" id="tnaStarVal" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">其他建議或補充說明</label>
+        <textarea class="form-input" id="tnaRemark" rows="2" placeholder="任何對訓練計畫的想法或建議..." style="resize:vertical"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:24px">
+        <button class="btn btn-primary" style="flex:1;padding:13px" onclick="submitTNA()">📤 提交需求調查</button>
+        <a class="btn btn-outline" href="P-001_%E6%8B%9B%E5%8B%9F%E5%AD%B8%E5%93%A1%E8%A8%93%E7%B7%B4%E9%9C%80%E6%B1%82%E8%AA%BF%E6%9F%A5%E5%95%8F%E5%8D%B7_115%E5%B9%B4V2.html" target="_blank" style="padding:13px 18px;text-decoration:none;text-align:center">📋 完整版 P-001</a>
+      </div>
+      <div class="login-error" id="tnaError" style="margin-top:10px"></div>
+    </div>
+
+    <!-- 提交成功 -->
+    <div class="tna-submitted hidden" id="tnaSuccess">
+      <div class="icon">✅</div>
+      <h3>調查已提交！感謝您的填寫。</h3>
+      <p>您的訓練需求已記錄至系統，訓練部門將參考您的意見規劃未來課程。</p>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="resetTNA()">📝 重新填寫</button>
+    </div>
+  </div>
+
 </main>
 
 <!-- ── Registration Modal ── -->
@@ -729,6 +881,9 @@ function doLogin() {
   var tEmail = document.getElementById("taskEmail");
   if (tEmpId) tEmpId.value = empId;
   if (tEmail) tEmail.value = email;
+
+  // 自動帶入 TNA 表單
+  fillTNAFromUser();
 
   // 關閉 overlay
   document.getElementById("loginOverlay").classList.add("hidden");
@@ -1121,6 +1276,7 @@ function switchTab(tab) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("tab-" + tab).classList.add("active");
   event.target.classList.add("active");
+  if (tab === "tna") fillTNAFromUser();
 }
 
 // ── Close modal on overlay click ──
@@ -1256,6 +1412,7 @@ function switchTab(tab) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("tab-" + tab).classList.add("active");
   event.target.classList.add("active");
+  if (tab === "tna") fillTNAFromUser();
 }
 
 // ── Close modal on overlay click ──
@@ -1265,6 +1422,94 @@ document.getElementById("regModal").addEventListener("click", function(e) {
 
 // ── Init ──
 loadCourses();
+
+
+// ── TNA 需求調查 ──
+var tnaStarValue = 0;
+
+function setStar(n) {
+  tnaStarValue = n;
+  document.getElementById("tnaStarVal").value = n;
+  var stars = document.querySelectorAll("#starRating .star-btn");
+  stars.forEach(function(s, i) { s.classList.toggle("active", i < n); });
+}
+
+function fillTNAFromUser() {
+  if (!currentUser) return;
+  var el = function(id) { return document.getElementById(id); };
+  if (el("tnaEmpId")) el("tnaEmpId").value = currentUser.empId;
+  if (el("tnaName"))  el("tnaName").value  = currentUser.name;
+  if (el("tnaDept"))  el("tnaDept").value  = currentUser.dept;
+  var bar = document.getElementById("tnaUserBar");
+  var info = document.getElementById("tnaUserInfo");
+  if (bar && info) {
+    info.textContent = currentUser.name + "（" + currentUser.dept + " · " + currentUser.empId + "）";
+    bar.classList.add("visible");
+  }
+}
+
+async function submitTNA() {
+  var empId   = document.getElementById("tnaEmpId").value.trim();
+  var name    = document.getElementById("tnaName").value.trim();
+  var dept    = document.getElementById("tnaDept").value;
+  var gap     = document.getElementById("tnaGap").value.trim();
+  var errEl   = document.getElementById("tnaError");
+
+  if (!empId || !name || !dept || !gap) { errEl.textContent = "請填寫所有必填欄位（標 * 者）"; return; }
+
+  // 收集複選技能
+  var skills = [];
+  document.querySelectorAll("#tnaSkillGrid input[type=checkbox]:checked").forEach(function(cb) {
+    skills.push(cb.value);
+  });
+  if (!skills.length) { errEl.textContent = "請至少選擇一項希望加強的能力領域"; return; }
+
+  errEl.textContent = "";
+  var btn = document.querySelector("#tnaFormCard .btn-primary");
+  btn.textContent = "提交中..."; btn.disabled = true;
+
+  var payload = {
+    action:    "submitTNA",
+    empId:     empId,
+    name:      name,
+    dept:      dept,
+    jobTitle:  document.getElementById("tnaJobTitle").value.trim(),
+    gap:       gap,
+    skills:    skills.join("、"),
+    suggest:   document.getElementById("tnaSuggest").value.trim(),
+    time:      document.getElementById("tnaTime").value,
+    format:    document.getElementById("tnaFormat").value,
+    star:      document.getElementById("tnaStarVal").value,
+    remark:    document.getElementById("tnaRemark").value.trim(),
+    timestamp: new Date().toISOString()
+  };
+
+  if (APPS_SCRIPT_URL !== "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST", mode: "no-cors",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "text/plain" }
+      });
+    } catch(e) { console.warn("TNA submit failed:", e); }
+  }
+
+  document.getElementById("tnaFormCard").classList.add("hidden");
+  document.getElementById("tnaSuccess").classList.remove("hidden");
+  btn.textContent = "📤 提交需求調查"; btn.disabled = false;
+}
+
+function resetTNA() {
+  document.getElementById("tnaFormCard").classList.remove("hidden");
+  document.getElementById("tnaSuccess").classList.add("hidden");
+  document.getElementById("tnaGap").value = "";
+  document.getElementById("tnaSuggest").value = "";
+  document.getElementById("tnaRemark").value = "";
+  document.getElementById("tnaTime").value = "";
+  document.getElementById("tnaFormat").value = "";
+  document.querySelectorAll("#tnaSkillGrid input[type=checkbox]").forEach(function(cb){ cb.checked = false; });
+  setStar(0);
+}
 
 </script>
 </body>
