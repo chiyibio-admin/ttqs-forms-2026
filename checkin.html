@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>課程簽到 | 奇異生技</title>
+<style>
+  :root {
+    --primary: #1a3c6e;
+    --primary-light: #2d5fa3;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 24px 16px 48px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    width: 100%; max-width: 440px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 24px;
+  }
+  .page-header .logo { font-size: 28px; }
+  .page-header h1 { font-size: 17px; font-weight: 700; color: var(--primary); }
+  .page-header p  { font-size: 12px; color: var(--muted); }
+
+  /* ── Card ── */
+  .card {
+    width: 100%; max-width: 440px;
+    background: var(--card); border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    margin-bottom: 16px;
+  }
+
+  /* ── Course Info ── */
+  .course-banner {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 12px; padding: 20px;
+    color: white; margin-bottom: 20px;
+  }
+  .course-banner .label { font-size: 11px; opacity: .75; margin-bottom: 4px; }
+  .course-banner .title { font-size: 18px; font-weight: 800; margin-bottom: 12px; line-height: 1.3; }
+  .course-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .course-meta-item .k { font-size: 10px; opacity: .7; }
+  .course-meta-item .v { font-size: 13px; font-weight: 600; }
+
+  /* ── Form ── */
+  .form-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; display: block; }
+  .form-input {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid var(--border); border-radius: 10px;
+    font-size: 18px; font-family: inherit; letter-spacing: .08em;
+    text-align: center; outline: none;
+    transition: border-color .2s;
+  }
+  .form-input:focus { border-color: var(--primary-light); }
+  .form-input::placeholder { font-size: 14px; letter-spacing: 0; color: #cbd5e1; }
+  .btn-checkin {
+    width: 100%; padding: 16px;
+    background: var(--primary); color: white;
+    border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    margin-top: 16px; transition: background .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-checkin:hover { background: var(--primary-light); }
+  .btn-checkin:disabled { background: #94a3b8; cursor: not-allowed; }
+
+  /* ── Status ── */
+  .state-wrap {
+    width: 100%; max-width: 440px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 32px 24px;
+    background: var(--card); border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+  .state-icon { font-size: 64px; margin-bottom: 16px; }
+  .state-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .state-sub   { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .state-course { font-size: 15px; font-weight: 700; color: var(--primary); margin: 12px 0 4px; }
+  .state-time   { font-size: 13px; color: var(--muted); }
+
+  .badge-success { background: #dcfce7; color: var(--success); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 16px; }
+  .badge-warn    { background: #fef9c3; color: var(--warning); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 16px; }
+  .badge-err     { background: #fee2e2; color: var(--danger);  border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 16px; }
+
+  /* ── Spinner ── */
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Hint ── */
+  .hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+  .date-warn {
+    background: #fef9c3; border: 1px solid #fde68a; border-radius: 10px;
+    padding: 14px 16px; font-size: 13px; color: #92400e; line-height: 1.5;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="logo">📱</span>
+  <div>
+    <h1>奇異生技 課程簽到</h1>
+    <p>TTQS 115年度 出席管理系統</p>
+  </div>
+</div>
+
+<!-- 載入中 -->
+<div id="stateLoading">
+  <div class="spinner"></div>
+</div>
+
+<!-- 無效課程 -->
+<div id="stateInvalidCourse" style="display:none">
+  <div class="state-wrap">
+    <div class="state-icon">❌</div>
+    <span class="badge-err">無效連結</span>
+    <div class="state-title">找不到課程</div>
+    <div class="state-sub">此 QR Code 連結無效或課程已不存在。<br>請聯絡訓練部門取得正確的簽到 QR Code。</div>
+  </div>
+</div>
+
+<!-- 非課程日 -->
+<div id="stateWrongDate" style="display:none">
+  <div class="state-wrap">
+    <div class="state-icon">📅</div>
+    <span class="badge-warn">非課程日</span>
+    <div class="state-title">今日無法簽到</div>
+    <div class="state-sub" id="wrongDateMsg"></div>
+  </div>
+</div>
+
+<!-- 簽到表單 -->
+<div id="stateForm" style="display:none">
+  <div class="card">
+    <div class="course-banner" id="courseBanner">
+      <div class="label">📚 課程簽到</div>
+      <div class="title" id="bannerTitle">—</div>
+      <div class="course-meta" id="bannerMeta"></div>
+    </div>
+
+    <label class="form-label">請輸入您的員工編號</label>
+    <input type="text" class="form-input" id="empIdInput"
+      placeholder="例：1001" inputmode="numeric" autocomplete="off"
+      onkeydown="if(event.key==='Enter') doCheckin()">
+    <button class="btn-checkin" id="checkinBtn" onclick="doCheckin()">
+      ✅ 確認簽到
+    </button>
+    <p class="hint">送出後系統將記錄您的出席，請確認員工編號正確。</p>
+  </div>
+</div>
+
+<!-- 簽到成功 -->
+<div id="stateSuccess" style="display:none">
+  <div class="state-wrap">
+    <div class="state-icon">🎉</div>
+    <span class="badge-success">簽到成功</span>
+    <div class="state-title" id="successName"></div>
+    <div class="state-course" id="successCourse"></div>
+    <div class="state-time" id="successTime"></div>
+    <div class="state-sub" style="margin-top:16px">出席已記錄，感謝您準時出席！<br>課程結束後請記得完成 L1 課後問卷。</div>
+  </div>
+</div>
+
+<!-- 已簽到 -->
+<div id="stateAlready" style="display:none">
+  <div class="state-wrap">
+    <div class="state-icon">✅</div>
+    <span class="badge-success">已完成簽到</span>
+    <div class="state-title">您已簽到</div>
+    <div class="state-sub" id="alreadyMsg"></div>
+  </div>
+</div>
+
+<!-- 簽到錯誤 -->
+<div id="stateError" style="display:none">
+  <div class="state-wrap">
+    <div class="state-icon">⚠️</div>
+    <span class="badge-err">簽到失敗</span>
+    <div class="state-title">無法完成簽到</div>
+    <div class="state-sub" id="errorMsg"></div>
+    <button onclick="showState('Form')"
+      style="margin-top:20px;padding:10px 24px;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px">
+      重新輸入
+    </button>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQHBTOzGo_UCvSdtGk5b2rpdedyBe6ptBsIfxWUntSiOw5wC7leuJu1v59A1xWxRqb/exec";
+
+const params = new URLSearchParams(location.search);
+const courseId = params.get("courseId") || "";
+
+let courseInfo = null;
+
+const STATES = ["Loading","InvalidCourse","WrongDate","Form","Success","Already","Error"];
+function showState(s) {
+  STATES.forEach(n => {
+    const el = document.getElementById("state" + n);
+    if (el) el.style.display = n === s ? (n === "Form" ? "block" : "flex") : "none";
+  });
+}
+
+// ── Init ──
+(async function init() {
+  if (!courseId) { showState("InvalidCourse"); return; }
+
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=getCourseInfo&courseId=${encodeURIComponent(courseId)}`);
+    const data = await res.json();
+
+    if (data.error || !data.course) { showState("InvalidCourse"); return; }
+    courseInfo = data.course;
+
+    // Date check ± 1 day
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const cDate = new Date(courseInfo.date);
+    cDate.setHours(0,0,0,0);
+    const diffDays = Math.round((cDate - today) / 86400000);
+
+    if (Math.abs(diffDays) > 1) {
+      const msg = diffDays > 1
+        ? `課程日期為 <strong>${courseInfo.date}</strong>，尚未開始，簽到僅限課程當天（±1天）。`
+        : `課程 <strong>${courseInfo.title}</strong> 已於 <strong>${courseInfo.date}</strong> 結束，無法補簽。`;
+      document.getElementById("wrongDateMsg").innerHTML = msg;
+      showState("WrongDate");
+      return;
+    }
+
+    // Show form
+    document.getElementById("bannerTitle").textContent = courseInfo.title;
+    document.getElementById("bannerMeta").innerHTML = [
+      { k: "📅 日期", v: courseInfo.date },
+      { k: "🕐 時間", v: courseInfo.time || "—" },
+      { k: "📍 地點", v: courseInfo.location || "—" },
+      { k: "👨‍🏫 講師", v: courseInfo.instructor || "—" }
+    ].map(m => `<div class="course-meta-item"><div class="k">${m.k}</div><div class="v">${m.v}</div></div>`).join("");
+
+    showState("Form");
+  } catch(e) {
+    showState("InvalidCourse");
+  }
+})();
+
+// ── Check In ──
+async function doCheckin() {
+  const empId = document.getElementById("empIdInput").value.trim();
+  if (!empId) { document.getElementById("empIdInput").focus(); return; }
+
+  const btn = document.getElementById("checkinBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite"></span> 驗證中…';
+
+  try {
+    // ① 先用 GET 驗證報名資格 + 是否已簽到
+    const preRes = await fetch(
+      `${APPS_SCRIPT_URL}?action=checkAttendance&courseId=${encodeURIComponent(courseId)}&empId=${encodeURIComponent(empId)}`
+    );
+    const pre = await preRes.json();
+
+    if (pre.error === "not_enrolled") {
+      btn.disabled = false; btn.innerHTML = "✅ 確認簽到";
+      document.getElementById("errorMsg").innerHTML =
+        `查無員工編號 <strong>${empId}</strong> 的確認報名記錄。<br>請確認編號無誤，或聯絡訓練部門。`;
+      showState("Error"); return;
+    }
+    if (pre.checkedIn) {
+      btn.disabled = false; btn.innerHTML = "✅ 確認簽到";
+      document.getElementById("alreadyMsg").innerHTML =
+        `<strong>${pre.name || empId}</strong> 已於 <strong>${pre.time || "稍早"}</strong> 完成簽到。<br>${courseInfo.title}`;
+      showState("Already"); return;
+    }
+
+    // ② 送出簽到（no-cors POST）
+    btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite"></span> 記錄中…';
+    await fetch(APPS_SCRIPT_URL, {
+      method: "POST", mode: "no-cors",
+      body: JSON.stringify({ action: "recordAttendance", courseId, empId }),
+      headers: { "Content-Type": "text/plain" }
+    });
+    await new Promise(r => setTimeout(r, 900));
+
+    // ③ 顯示成功（樂觀：pre 已確認未簽到，POST 必然成功）
+    btn.disabled = false; btn.innerHTML = "✅ 確認簽到";
+    document.getElementById("successName").textContent = `${pre.name || empId} 您好 👋`;
+    document.getElementById("successCourse").textContent = courseInfo.title;
+    document.getElementById("successTime").textContent =
+      "簽到時間：" + new Date().toLocaleString("zh-TW", { hour12: false });
+    showState("Success");
+
+  } catch(e) {
+    btn.disabled = false; btn.innerHTML = "✅ 確認簽到";
+    document.getElementById("errorMsg").innerHTML = "網路連線失敗，請確認手機網路後重試。";
+    showState("Error");
+  }
+}
+</script>
+</body>
+</html>
