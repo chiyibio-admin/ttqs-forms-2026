@@ -312,6 +312,9 @@
 
     <div class="toolbar">
       <input type="text" class="search-box" id="searchInput" placeholder="🔍 搜尋課程名稱、講師..." oninput="filterCourses()">
+      <select class="filter-select" id="filterYear" onchange="filterCourses()" title="依年份篩選">
+        <option value="">全部年份</option>
+      </select>
       <select class="filter-select" id="filterDept" onchange="filterCourses()">
         <option value="">全部部門</option>
         <option value="全體">全體員工</option>
@@ -329,6 +332,15 @@
         <option value="waitlist">候補中</option>
         <option value="closed">已截止</option>
       </select>
+    </div>
+    <div class="toolbar" style="margin-top:-10px;padding-top:0">
+      <span style="font-size:12px;color:#6b7280;white-space:nowrap;align-self:center">📅 日期區間</span>
+      <input type="date" class="filter-select" id="filterDateFrom" onchange="filterCourses()" style="width:150px" title="開始日期">
+      <span style="font-size:13px;color:#9ca3af;align-self:center">—</span>
+      <input type="date" class="filter-select" id="filterDateTo" onchange="filterCourses()" style="width:150px" title="結束日期">
+      <button class="btn" onclick="clearDateFilter()" style="padding:6px 12px;background:#f3f4f6;color:#374151;border:1px solid #d1d5db;font-size:12px">✕ 清除日期</button>
+      <div style="flex:1"></div>
+      <span id="courseCountLabel" style="font-size:12px;color:#6b7280;align-self:center;white-space:nowrap"></span>
     </div>
 
     <div id="courseGrid" class="course-grid">
@@ -589,6 +601,7 @@ let selectedCourse = null;
 // ── Load courses from Apps Script (if configured) ──
 async function loadCourses() {
   if (APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    buildYearOptions();
     renderCourses(allCourses);
     return;
   }
@@ -597,7 +610,40 @@ async function loadCourses() {
     const data = await res.json();
     if (data.courses) { allCourses = data.courses; }
   } catch(e) { console.warn("使用示範課程資料"); }
+  buildYearOptions();
   renderCourses(allCourses);
+}
+
+// ── 自動從課程資料產生年份選單 ──
+function buildYearOptions() {
+  // 收集所有課程的西元年，轉換成民國年
+  var yearSet = {};
+  allCourses.forEach(function(c) {
+    if (c.date && c.date.length >= 4) {
+      var westernYear = parseInt(c.date.substring(0, 4));
+      var rocYear = westernYear - 1911;
+      yearSet[rocYear] = westernYear;
+    }
+  });
+
+  var years = Object.keys(yearSet).map(Number).sort(function(a, b) { return b - a; }); // 降冪（新到舊）
+  var sel = document.getElementById("filterYear");
+  var currentVal = sel.value;
+
+  // 清空舊選項（保留「全部年份」）
+  sel.innerHTML = '<option value="">全部年份</option>';
+  years.forEach(function(roc) {
+    var opt = document.createElement("option");
+    opt.value = String(roc);
+    opt.textContent = roc + "年（" + yearSet[roc] + "）";
+    // 預設選當前民國年
+    var currentRoc = new Date().getFullYear() - 1911;
+    if (roc === currentRoc) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  // 若之前有選值則恢復
+  if (currentVal) sel.value = currentVal;
 }
 
 // ── Render course cards ──
@@ -656,15 +702,48 @@ function renderCourses(courses) {
   }).join("");
 }
 
+// 民國年 → 西元年對照
+function rocToGregorian(rocYear) {
+  return parseInt(rocYear) + 1911;
+}
+
+function clearDateFilter() {
+  document.getElementById("filterDateFrom").value = "";
+  document.getElementById("filterDateTo").value = "";
+  filterCourses();
+}
+
 function filterCourses() {
-  const q = document.getElementById("searchInput").value.toLowerCase();
-  const dept = document.getElementById("filterDept").value;
-  const status = document.getElementById("filterStatus").value;
-  const filtered = allCourses.filter(c =>
-    (c.title.toLowerCase().includes(q) || c.instructor.toLowerCase().includes(q)) &&
-    (!dept || c.dept === dept || (dept === "全體" && c.dept === "全體")) &&
-    (!status || c.status === status)
-  );
+  const q        = document.getElementById("searchInput").value.toLowerCase();
+  const dept     = document.getElementById("filterDept").value;
+  const status   = document.getElementById("filterStatus").value;
+  const yearRoc  = document.getElementById("filterYear").value;
+  const dateFrom = document.getElementById("filterDateFrom").value; // "YYYY-MM-DD"
+  const dateTo   = document.getElementById("filterDateTo").value;
+
+  const filtered = allCourses.filter(function(c) {
+    // 關鍵字
+    if (q && !c.title.toLowerCase().includes(q) && !c.instructor.toLowerCase().includes(q)) return false;
+    // 部門
+    if (dept && c.dept !== dept && !(dept === "全體" && c.dept === "全體")) return false;
+    // 狀態
+    if (status && c.status !== status) return false;
+    // 年份（民國年 → 比對課程日期西元年）
+    if (yearRoc && c.date) {
+      var courseYear = c.date.substring(0, 4); // "2026"
+      if (courseYear !== String(rocToGregorian(yearRoc))) return false;
+    }
+    // 日期區間
+    if (dateFrom && c.date && c.date < dateFrom) return false;
+    if (dateTo   && c.date && c.date > dateTo)   return false;
+    return true;
+  });
+
+  // 更新年份標籤
+  var yearLabel = yearRoc ? yearRoc + "年（" + rocToGregorian(yearRoc) + "）" : "全部年份";
+  var countEl = document.getElementById("courseCountLabel");
+  if (countEl) countEl.textContent = "顯示 " + filtered.length + " 門課程 · " + yearLabel;
+
   renderCourses(filtered);
 }
 
