@@ -170,6 +170,69 @@
   .form-group { display: flex; flex-direction: column; gap: 5px; }
   .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
   .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; }
+
+  /* ── Effectiveness Tab ── */
+  .eff-header { background: linear-gradient(135deg, #1a3c6e 0%, #2d5fa3 100%); border-radius: 14px; padding: 24px 28px; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 24px; }
+  .eff-header-text h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .eff-header-text p  { font-size: 13px; opacity: .8; }
+  .eff-score-ring { width: 88px; height: 88px; border-radius: 50%; border: 6px solid rgba(255,255,255,.25); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+  .eff-score-ring .score-num { font-size: 26px; font-weight: 900; line-height: 1; }
+  .eff-score-ring .score-lbl { font-size: 10px; opacity: .8; }
+  .eff-compliance { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .eff-chip { background: rgba(255,255,255,.15); border-radius: 20px; padding: 4px 12px; font-size: 12px; }
+  .eff-chip.ok  { background: rgba(22,163,74,.35); }
+  .eff-chip.warn{ background: rgba(217,119,6,.45); }
+
+  .kirk-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+  @media(max-width:900px){ .kirk-grid { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:500px){ .kirk-grid { grid-template-columns: 1fr; } }
+  .kirk-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); border-top: 4px solid var(--primary); position: relative; overflow: hidden; }
+  .kirk-card.l1 { border-top-color: #3b82f6; }
+  .kirk-card.l2 { border-top-color: #8b5cf6; }
+  .kirk-card.l3 { border-top-color: #f59e0b; }
+  .kirk-card.l4 { border-top-color: #10b981; }
+  .kirk-level { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .l1 .kirk-level { color: #3b82f6; }
+  .l2 .kirk-level { color: #8b5cf6; }
+  .l3 .kirk-level { color: #f59e0b; }
+  .l4 .kirk-level { color: #10b981; }
+  .kirk-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .kirk-big   { font-size: 36px; font-weight: 900; line-height: 1; margin-bottom: 2px; }
+  .l1 .kirk-big { color: #3b82f6; }
+  .l2 .kirk-big { color: #8b5cf6; }
+  .l3 .kirk-big { color: #f59e0b; }
+  .l4 .kirk-big { color: #10b981; }
+  .kirk-sub   { font-size: 11px; color: var(--muted); }
+  .kirk-progress { margin-top: 12px; }
+  .prog-bar { background: var(--bg); border-radius: 4px; height: 8px; overflow: hidden; margin-top: 4px; }
+  .prog-fill { height: 100%; border-radius: 4px; transition: width .8s ease; }
+  .l1 .prog-fill { background: #3b82f6; }
+  .l2 .prog-fill { background: #8b5cf6; }
+  .l3 .prog-fill { background: #f59e0b; }
+  .l4 .prog-fill { background: #10b981; }
+  .prog-label { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+  .kirk-no-data { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .kirk-watermark { position: absolute; right: -8px; bottom: -8px; font-size: 60px; opacity: .04; }
+
+  .tna-insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media(max-width:700px){ .tna-insights-grid { grid-template-columns: 1fr; } }
+  .insight-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .insight-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+  .star-display { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .stars-row { font-size: 22px; letter-spacing: 2px; }
+  .star-score { font-size: 28px; font-weight: 900; color: var(--accent); }
+  .star-total { font-size: 12px; color: var(--muted); }
+  .skill-tag { display: inline-block; background: #eff6ff; color: #1d4ed8; border-radius: 6px; padding: 4px 10px; font-size: 12px; margin: 3px 3px 0 0; }
+  .pref-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .pref-row:last-child { border-bottom: none; }
+  .pref-val { font-weight: 700; color: var(--primary); }
+  .funnel-wrap { background: white; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 20px; }
+  .funnel-wrap h4 { font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+  .funnel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .funnel-icon { width: 32px; text-align: center; font-size: 18px; }
+  .funnel-bar-track { flex: 1; background: var(--bg); border-radius: 6px; height: 28px; overflow: hidden; }
+  .funnel-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; font-size: 12px; font-weight: 700; color: white; transition: width .8s ease; white-space: nowrap; }
+  .funnel-count { width: 56px; text-align: right; font-size: 13px; font-weight: 700; color: var(--text); }
 </style>
 </head>
 <body>
@@ -199,6 +262,7 @@
   <button class="nav-tab active" onclick="switchPage('dashboard', this)">📈 總覽</button>
   <button class="nav-tab" onclick="switchPage('enrollments', this)">📋 報名名單</button>
   <button class="nav-tab" onclick="switchPage('attendance', this)">✅ 出席管理</button>
+  <button class="nav-tab" onclick="switchPage('effectiveness', this)">🏆 成效分析</button>
   <button class="nav-tab" onclick="switchPage('export', this)">📤 匯出報表</button>
 </div>
 
@@ -270,6 +334,62 @@
       </div>
       <div id="attendTable"><div class="loading-wrap"><div class="spinner"></div></div></div>
     </div>
+  </div>
+
+  <!-- Effectiveness -->
+  <div id="page-effectiveness" class="page">
+
+    <!-- Header / Compliance Banner -->
+    <div class="eff-header" id="effHeader">
+      <div class="eff-score-ring" id="effScoreRing">
+        <span class="score-num" id="effScoreNum">—</span>
+        <span class="score-lbl">TTQS分</span>
+      </div>
+      <div class="eff-header-text">
+        <h2>Kirkpatrick 四階層訓練成效分析</h2>
+        <p>TTQS R查核 · O成果 — 115年度奇異生技股份有限公司</p>
+        <div class="eff-compliance" id="effChips">
+          <span class="eff-chip">載入中...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Funnel: 報名→完課→評估 -->
+    <div class="funnel-wrap">
+      <h4>📊 訓練參與漏斗</h4>
+      <div id="funnelChart"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- Kirkpatrick Four Levels -->
+    <div class="kirk-grid" id="kirkGrid">
+      <div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div>載入評估數據中...</div>
+    </div>
+
+    <!-- TNA Insights -->
+    <div class="tna-insights-grid" id="tnaInsights" style="display:none">
+      <div class="insight-card">
+        <h4>⭐ TNA 訓練滿意度</h4>
+        <div id="tnaStarBlock"></div>
+      </div>
+      <div class="insight-card">
+        <h4>🎯 希望加強技能 Top 5</h4>
+        <div id="tnaSkillBlock"></div>
+      </div>
+      <div class="insight-card">
+        <h4>🕐 偏好時段 / 形式</h4>
+        <div id="tnaPrefBlock"></div>
+      </div>
+      <div class="insight-card">
+        <h4>📌 TTQS PDDRO 完整度</h4>
+        <div id="ttqsCompBlock"></div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-bottom:16px">
+      <button class="btn btn-accent" onclick="exportEffectivenessExcel()">⬇ 匯出成效報告 Excel</button>
+      <button class="btn btn-primary" onclick="loadEffectiveness()">🔄 重新整理</button>
+    </div>
+
   </div>
 
   <!-- Export -->
@@ -368,6 +488,7 @@ function switchPage(name, btn) {
   document.getElementById("page-" + name).classList.add("active");
   btn.classList.add("active");
   if (name === "attendance") loadAttendance();
+  if (name === "effectiveness") loadEffectiveness();
 }
 
 // ── KPI ──
@@ -633,6 +754,231 @@ function exportCoursesExcel() {
 
 function today() {
   return new Date().toISOString().slice(0,10).replace(/-/g,"");
+}
+
+// ════════════════════════════════════════════
+// 成效分析頁
+// ════════════════════════════════════════════
+let effData = null;
+
+function loadEffectiveness() {
+  document.getElementById("kirkGrid").innerHTML =
+    '<div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div>載入評估數據中...</div>';
+  document.getElementById("tnaInsights").style.display = "none";
+  document.getElementById("funnelChart").innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
+
+  fetch(`${APPS_SCRIPT_URL}?action=getEvalStats&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) { document.getElementById("kirkGrid").innerHTML = '<div class="empty">載入失敗：' + d.error + '</div>'; return; }
+      effData = d;
+      renderEffHeader(d);
+      renderFunnel(d);
+      renderKirkpatrick(d);
+      renderTNAInsights(d);
+    })
+    .catch(() => {
+      document.getElementById("kirkGrid").innerHTML = '<div class="empty">連線失敗，請重新整理</div>';
+    });
+}
+
+function renderEffHeader(d) {
+  // Compute a rough TTQS compliance score (0-100)
+  let score = 0;
+  if (d.summary.enrolled > 0)   score += 20; // Do執行：有報名
+  if (d.summary.attended > 0)   score += 20; // Do執行：有出席
+  if (d.tna.count > 0)          score += 20; // P計畫：TNA完成
+  if (d.l1.count > 0)           score += 15; // R查核：L1
+  if (d.l2.count > 0)           score += 10; // R查核：L2
+  if (d.l3.count > 0)           score += 10; // O成果：L3
+  if (d.l4.count > 0)           score += 5;  // O成果：L4
+  score = Math.min(score, 100);
+
+  document.getElementById("effScoreNum").textContent = score;
+  document.getElementById("effScoreRing").style.borderColor =
+    score >= 80 ? "rgba(34,197,94,.7)" : score >= 50 ? "rgba(251,191,36,.7)" : "rgba(239,68,68,.5)";
+
+  const chips = [
+    { label: "P 計畫：TNA " + (d.tna.count > 0 ? "✓ " + d.tna.count + "份" : "待填寫"), ok: d.tna.count > 0 },
+    { label: "Do 執行：報名 " + d.summary.enrolled + " 人", ok: d.summary.enrolled > 0 },
+    { label: "R 查核：L1評估 " + (d.l1.count > 0 ? "✓ " + d.l1.count + "份" : "待收集"), ok: d.l1.count > 0 },
+    { label: "O 成果：L3行為 " + (d.l3.count > 0 ? "✓ " + d.l3.count + "份" : "90天後追蹤"), ok: d.l3.count > 0 },
+  ];
+  document.getElementById("effChips").innerHTML =
+    chips.map(c => `<span class="eff-chip ${c.ok ? 'ok' : 'warn'}">${c.label}</span>`).join("");
+}
+
+function renderFunnel(d) {
+  const items = [
+    { icon: "📝", label: "TNA需求調查", count: d.tna.count, color: "#6366f1" },
+    { icon: "✅", label: "確認報名", count: d.summary.enrolled, color: "#3b82f6" },
+    { icon: "🏫", label: "已出席", count: d.summary.attended, color: "#8b5cf6" },
+    { icon: "📋", label: "L1反應評估", count: d.l1.count, color: "#f59e0b" },
+    { icon: "📊", label: "L3行為追蹤(90天)", count: d.l3.count, color: "#10b981" },
+  ];
+  const maxVal = Math.max(...items.map(i => i.count), 1);
+  document.getElementById("funnelChart").innerHTML = items.map(it => `
+    <div class="funnel-row">
+      <div class="funnel-icon">${it.icon}</div>
+      <div class="funnel-bar-track">
+        <div class="funnel-bar-fill" style="width:${Math.max(it.count/maxVal*100,4)}%;background:${it.color}">
+          ${it.label}
+        </div>
+      </div>
+      <div class="funnel-count">${it.count}</div>
+    </div>`).join("");
+}
+
+function renderKirkpatrick(d) {
+  const levels = [
+    {
+      cls: "l1", level: "Level 1", title: "反應 Reaction",
+      icon: "😊", desc: "學員課後即時反應與滿意度",
+      count: d.l1.count, avg: d.l1.avg, maxScore: 5,
+      unit: "/ 5 分", noDataHint: "課程結束當天系統自動寄送 L1 問卷<br>待學員填寫後資料將顯示於此"
+    },
+    {
+      cls: "l2", level: "Level 2", title: "學習 Learning",
+      icon: "📚", desc: "知識技能學習成效測驗",
+      count: d.l2.count, avg: d.l2.avg, maxScore: 100,
+      unit: "/ 100 分", noDataHint: "課後 L2 學習評量問卷<br>待學員填寫後顯示"
+    },
+    {
+      cls: "l3", level: "Level 3", title: "行為 Behavior",
+      icon: "🔄", desc: "90天後職場行為改變追蹤",
+      count: d.l3.count, avg: d.l3.avg, maxScore: 5,
+      unit: "/ 5 分", noDataHint: "課後 90 天自動發送 L3 追蹤問卷<br>尚未到追蹤期或待填寫"
+    },
+    {
+      cls: "l4", level: "Level 4", title: "成果 Results",
+      icon: "📈", desc: "訓練對組織績效的實質影響",
+      count: d.l4.count, avg: d.l4.avg, maxScore: 5,
+      unit: "/ 5 分", noDataHint: "課後 90 天 L4 組織成效評估<br>需主管填寫業績/KPI 改善情形"
+    }
+  ];
+
+  document.getElementById("kirkGrid").innerHTML = levels.map(lv => {
+    const pct = lv.count > 0 && lv.avg > 0 ? Math.round(lv.avg / lv.maxScore * 100) : 0;
+    const avgDisp = lv.count > 0 ? lv.avg.toFixed(1) : "—";
+    return `
+    <div class="kirk-card ${lv.cls}">
+      <div class="kirk-level">${lv.level}</div>
+      <div class="kirk-title">${lv.icon} ${lv.title}</div>
+      <div class="kirk-big">${avgDisp}</div>
+      <div class="kirk-sub">${lv.count > 0 ? lv.unit + " · " + lv.count + " 份回覆" : "尚無資料"}</div>
+      ${lv.count > 0
+        ? `<div class="kirk-progress">
+            <div class="prog-label"><span>${lv.desc}</span><span>${pct}%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+           </div>`
+        : `<div class="kirk-no-data">ℹ️ ${lv.noDataHint}</div>`
+      }
+      <div class="kirk-watermark">${lv.icon}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderTNAInsights(d) {
+  document.getElementById("tnaInsights").style.display = "grid";
+
+  // Star rating
+  const star = d.tna.avgStar || 0;
+  const fullStars = Math.round(star);
+  const starsHtml = "★".repeat(fullStars) + "☆".repeat(5 - fullStars);
+  document.getElementById("tnaStarBlock").innerHTML = `
+    <div class="star-display">
+      <span class="star-score">${star > 0 ? star.toFixed(1) : "—"}</span>
+      <div>
+        <div class="stars-row" style="color:${star>=4?'#f59e0b':'#94a3b8'}">${starsHtml}</div>
+        <div class="star-total">${d.tna.count} 份問卷 · 滿分 5 星</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px">
+      ${star >= 4.5 ? "🎉 學員對訓練體驗高度滿意" :
+        star >= 3.5 ? "👍 整體滿意，仍有改善空間" :
+        star >= 2.5 ? "⚠️ 滿意度中等，建議檢討課程設計" :
+        star > 0    ? "🔴 滿意度偏低，請檢視訓練內容" :
+        "尚無 TNA 問卷數據"}
+    </div>`;
+
+  // Skills
+  const skills = d.tna.topSkills || [];
+  document.getElementById("tnaSkillBlock").innerHTML = skills.length
+    ? skills.map(s => `<span class="skill-tag">${s.label} <strong>${s.count}</strong></span>`).join("")
+    : '<div style="font-size:12px;color:var(--muted)">尚無技能需求數據</div>';
+
+  // Preferences
+  document.getElementById("tnaPrefBlock").innerHTML = `
+    <div class="pref-row"><span>偏好時段</span><span class="pref-val">${d.tna.topTime || "—"}</span></div>
+    <div class="pref-row"><span>偏好形式</span><span class="pref-val">${d.tna.topFormat || "—"}</span></div>
+    <div class="pref-row"><span>TNA填寫人數</span><span class="pref-val">${d.tna.count} 人</span></div>
+    <div class="pref-row"><span>填寫完成率</span><span class="pref-val">${d.summary.enrolled > 0 ? Math.round(d.tna.count / d.summary.enrolled * 100) + "%" : "—"}</span></div>`;
+
+  // TTQS completeness
+  const checks = [
+    { stage: "P 計畫", item: "TNA需求調查", ok: d.tna.count > 0 },
+    { stage: "D 設計", item: "課程規劃記錄", ok: d.summary.enrolled > 0 },
+    { stage: "Do 執行", item: "報名出席記錄", ok: d.summary.attended > 0 },
+    { stage: "R 查核", item: "L1反應評估", ok: d.l1.count > 0 },
+    { stage: "R 查核", item: "L2學習評量", ok: d.l2.count > 0 },
+    { stage: "O 成果", item: "L3行為追蹤", ok: d.l3.count > 0 },
+    { stage: "O 成果", item: "L4成果評估", ok: d.l4.count > 0 },
+  ];
+  document.getElementById("ttqsCompBlock").innerHTML = checks.map(c => `
+    <div class="pref-row">
+      <span>${c.ok ? "✅" : "⬜"} <small style="color:var(--muted)">${c.stage}</small> ${c.item}</span>
+      <span class="pref-val" style="color:${c.ok ? 'var(--success)' : 'var(--muted)'}">${c.ok ? "完成" : "待補"}</span>
+    </div>`).join("");
+}
+
+function exportEffectivenessExcel() {
+  if (!effData) { alert("請先載入成效數據"); return; }
+  const d = effData;
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1: Summary
+  const summaryData = [
+    ["TTQS 115年度 訓練成效分析報告"],
+    ["奇異生技股份有限公司", "", "產出時間：" + new Date().toLocaleString("zh-TW")],
+    [],
+    ["=== Kirkpatrick 四階層 ==="],
+    ["階層", "名稱", "回覆份數", "平均分數"],
+    ["L1", "反應 Reaction",   d.l1.count, d.l1.avg > 0 ? d.l1.avg.toFixed(2) + " / 5" : "—"],
+    ["L2", "學習 Learning",   d.l2.count, d.l2.avg > 0 ? d.l2.avg.toFixed(2) + " / 100" : "—"],
+    ["L3", "行為 Behavior",   d.l3.count, d.l3.avg > 0 ? d.l3.avg.toFixed(2) + " / 5" : "—"],
+    ["L4", "成果 Results",    d.l4.count, d.l4.avg > 0 ? d.l4.avg.toFixed(2) + " / 5" : "—"],
+    [],
+    ["=== 訓練參與 ==="],
+    ["確認報名人次", d.summary.enrolled],
+    ["已出席人次",   d.summary.attended],
+    ["出席率",       d.summary.enrolled > 0 ? Math.round(d.summary.attended / d.summary.enrolled * 100) + "%" : "—"],
+    [],
+    ["=== TNA 訓練需求調查 ==="],
+    ["填寫份數",     d.tna.count],
+    ["訓練滿意度",   d.tna.avgStar > 0 ? d.tna.avgStar.toFixed(2) + " / 5 星" : "—"],
+    ["最常見偏好時段", d.tna.topTime || "—"],
+    ["最常見偏好形式", d.tna.topFormat || "—"],
+  ];
+  const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+  XLSX.utils.book_append_sheet(wb, ws1, "成效摘要");
+
+  // Sheet 2: TTQS Compliance
+  const compData = [
+    ["TTQS PDDRO 佐證對照"],
+    [],
+    ["階段", "指標", "完成狀態", "佐證數量"],
+    ["P 計畫", "訓練需求調查(TNA)", d.tna.count > 0 ? "✓ 完成" : "待補", d.tna.count],
+    ["D 設計", "課程規劃記錄", d.summary.enrolled > 0 ? "✓ 完成" : "待補", d.summary.enrolled],
+    ["Do 執行", "出席記錄", d.summary.attended > 0 ? "✓ 完成" : "待補", d.summary.attended],
+    ["R 查核", "L1反應評估", d.l1.count > 0 ? "✓ 完成" : "待補", d.l1.count],
+    ["R 查核", "L2學習評量", d.l2.count > 0 ? "✓ 完成" : "待補", d.l2.count],
+    ["O 成果", "L3行為追蹤(90天)", d.l3.count > 0 ? "✓ 完成" : "待補", d.l3.count],
+    ["O 成果", "L4成果評估", d.l4.count > 0 ? "✓ 完成" : "待補", d.l4.count],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(compData);
+  XLSX.utils.book_append_sheet(wb, ws2, "TTQS佐證對照");
+
+  XLSX.writeFile(wb, `TTQS成效分析_${today()}.xlsx`);
 }
 </script>
 </body>
