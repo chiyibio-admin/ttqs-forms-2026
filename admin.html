@@ -339,6 +339,16 @@
   <!-- Effectiveness -->
   <div id="page-effectiveness" class="page">
 
+    <!-- Year Filter Bar -->
+    <div class="filter-bar" style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:600;color:var(--muted)">分析年度（民國）</label>
+      <select id="effYearFilter" onchange="loadEffectiveness()" style="width:120px">
+        <!-- built by buildEffYearOptions() -->
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="loadEffectiveness()">🔄 重新整理</button>
+    </div>
+
     <!-- Header / Compliance Banner -->
     <div class="eff-header" id="effHeader">
       <div class="eff-score-ring" id="effScoreRing">
@@ -465,6 +475,7 @@ function doLogin() {
       renderKPI(d);
       loadDeptChart();
       loadEnrollments();
+      buildEffYearOptions();
     })
     .catch(() => { document.getElementById("loginErr").textContent = "連線失敗，請稍後再試"; });
 }
@@ -761,13 +772,26 @@ function today() {
 // ════════════════════════════════════════════
 let effData = null;
 
+function buildEffYearOptions() {
+  const sel = document.getElementById("effYearFilter");
+  const curYear = new Date().getFullYear() - 1911; // current ROC year
+  let html = '<option value="">全部年度</option>';
+  for (let y = curYear; y >= curYear - 4; y--) {
+    html += `<option value="${y}" ${y === curYear ? 'selected' : ''}>${y} 年</option>`;
+  }
+  sel.innerHTML = html;
+}
+
 function loadEffectiveness() {
   document.getElementById("kirkGrid").innerHTML =
     '<div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div>載入評估數據中...</div>';
   document.getElementById("tnaInsights").style.display = "none";
   document.getElementById("funnelChart").innerHTML = '<div class="loading-wrap"><div class="spinner"></div></div>';
 
-  fetch(`${APPS_SCRIPT_URL}?action=getEvalStats&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+  const year = document.getElementById("effYearFilter")?.value || "";
+  const yearParam = year ? `&year=${encodeURIComponent(year)}` : "";
+
+  fetch(`${APPS_SCRIPT_URL}?action=getEvalStats&token=${encodeURIComponent(ADMIN_TOKEN)}${yearParam}`)
     .then(r => r.json())
     .then(d => {
       if (d.error) { document.getElementById("kirkGrid").innerHTML = '<div class="empty">載入失敗：' + d.error + '</div>'; return; }
@@ -783,6 +807,10 @@ function loadEffectiveness() {
 }
 
 function renderEffHeader(d) {
+  const year = document.getElementById("effYearFilter")?.value || "";
+  const yearLabel = year ? year + " 年度" : "全部年度";
+  document.querySelector(".eff-header-text p").textContent =
+    `TTQS R查核 · O成果 — ${yearLabel} 奇異生技股份有限公司`;
   // Compute a rough TTQS compliance score (0-100)
   let score = 0;
   if (d.summary.enrolled > 0)   score += 20; // Do執行：有報名
@@ -934,11 +962,13 @@ function renderTNAInsights(d) {
 function exportEffectivenessExcel() {
   if (!effData) { alert("請先載入成效數據"); return; }
   const d = effData;
+  const year = document.getElementById("effYearFilter")?.value || "";
+  const yearLabel = year ? year + " 年度" : "全部年度";
   const wb = XLSX.utils.book_new();
 
   // Sheet 1: Summary
   const summaryData = [
-    ["TTQS 115年度 訓練成效分析報告"],
+    [`TTQS ${yearLabel} 訓練成效分析報告`],
     ["奇異生技股份有限公司", "", "產出時間：" + new Date().toLocaleString("zh-TW")],
     [],
     ["=== Kirkpatrick 四階層 ==="],
@@ -978,7 +1008,7 @@ function exportEffectivenessExcel() {
   const ws2 = XLSX.utils.aoa_to_sheet(compData);
   XLSX.utils.book_append_sheet(wb, ws2, "TTQS佐證對照");
 
-  XLSX.writeFile(wb, `TTQS成效分析_${today()}.xlsx`);
+  XLSX.writeFile(wb, `TTQS成效分析_${year || "全部"}_${today()}.xlsx`);
 }
 </script>
 </body>
