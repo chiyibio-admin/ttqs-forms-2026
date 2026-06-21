@@ -171,6 +171,21 @@
   .form-group label { font-size: 12px; color: var(--muted); font-weight: 600; }
   .form-group input, .form-group select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; }
 
+  /* ── Modal ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 500; display: none; align-items: flex-start; justify-content: center; padding-top: 48px; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: white; border-radius: 14px; padding: 28px 32px; width: 580px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,.2); }
+  .modal-title { font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .modal-grid .full { grid-column: 1 / -1; }
+  .modal-field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .03em; }
+  .modal-input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; font-family: inherit; }
+  .modal-input:focus { border-color: var(--primary-light); outline: none; }
+  textarea.modal-input { resize: vertical; min-height: 72px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .modal-overlay:not(.open) { pointer-events: none; }
+
   /* ── Effectiveness Tab ── */
   .eff-header { background: linear-gradient(135deg, #1a3c6e 0%, #2d5fa3 100%); border-radius: 14px; padding: 24px 28px; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 24px; }
   .eff-header-text h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
@@ -262,6 +277,7 @@
   <button class="nav-tab active" onclick="switchPage('dashboard', this)">📈 總覽</button>
   <button class="nav-tab" onclick="switchPage('enrollments', this)">📋 報名名單</button>
   <button class="nav-tab" onclick="switchPage('attendance', this)">✅ 出席管理</button>
+  <button class="nav-tab" onclick="switchPage('courses', this)">⚙️ 課程管理</button>
   <button class="nav-tab" onclick="switchPage('effectiveness', this)">🏆 成效分析</button>
   <button class="nav-tab" onclick="switchPage('export', this)">📤 匯出報表</button>
 </div>
@@ -333,6 +349,29 @@
         <span class="table-count" id="attendCount">—</span>
       </div>
       <div id="attendTable"><div class="loading-wrap"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- Courses Management -->
+  <div id="page-courses" class="page">
+    <div class="filter-bar">
+      <input type="text" id="courseSearch" placeholder="🔍 搜尋課程名稱" oninput="filterCourseMgmt()" style="width:200px">
+      <select id="courseStatusFilter" onchange="filterCourseMgmt()">
+        <option value="">全部狀態</option>
+        <option value="open">開放報名</option>
+        <option value="waitlist">候補中</option>
+        <option value="closed">已截止</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="openCourseModal()">＋ 新增課程</button>
+      <button class="btn btn-outline" onclick="loadCoursesMgmt()">🔄 重新整理</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head">
+        <span class="table-title">課程清單</span>
+        <span class="table-count" id="courseMgmtCount">—</span>
+      </div>
+      <div id="courseMgmtTable"><div class="loading-wrap"><div class="spinner"></div></div></div>
     </div>
   </div>
 
@@ -449,6 +488,72 @@
 
 </div>
 
+<!-- ── Course Modal ── -->
+<div class="modal-overlay" id="courseModal" onclick="if(event.target===this)closeCourseModal()">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="courseModalTitle">新增課程</span>
+      <button class="modal-close" onclick="closeCourseModal()">✕</button>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field full">
+        <label>課程名稱 *</label>
+        <input class="modal-input" id="mTitle" placeholder="例：職業安全衛生教育訓練">
+      </div>
+      <div class="modal-field">
+        <label>講師 *</label>
+        <input class="modal-input" id="mInstructor" placeholder="講師姓名">
+      </div>
+      <div class="modal-field">
+        <label>課程類型</label>
+        <input class="modal-input" id="mType" placeholder="例：Do執行、O成果">
+      </div>
+      <div class="modal-field">
+        <label>課程日期 *</label>
+        <input class="modal-input" type="date" id="mDate">
+      </div>
+      <div class="modal-field">
+        <label>上課時間</label>
+        <input class="modal-input" id="mTime" placeholder="例：09:00–17:00">
+      </div>
+      <div class="modal-field">
+        <label>名額上限（0 = 不限）</label>
+        <input class="modal-input" type="number" id="mCapacity" placeholder="20" min="0">
+      </div>
+      <div class="modal-field">
+        <label>上課地點</label>
+        <input class="modal-input" id="mLocation" placeholder="例：台北會議室 A">
+      </div>
+      <div class="modal-field">
+        <label>適用部門</label>
+        <select class="modal-input" id="mDept">
+          <option value="">全部</option>
+          <option>人事部</option><option>企劃部</option><option>財務部</option>
+          <option>營運部</option><option>HD訓練稽核部</option><option>行銷公關部</option><option>決策部</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>狀態覆蓋（留空＝自動）</label>
+        <select class="modal-input" id="mStatus">
+          <option value="">自動（依日期/名額判斷）</option>
+          <option value="open">開放報名</option>
+          <option value="waitlist">候補中</option>
+          <option value="closed">截止報名</option>
+        </select>
+      </div>
+      <div class="modal-field full">
+        <label>課程說明</label>
+        <textarea class="modal-input" id="mDesc" placeholder="課程目標、適合對象、對應 TTQS 指標…"></textarea>
+      </div>
+    </div>
+    <div id="courseModalMsg" style="font-size:12px;color:var(--muted);margin-top:8px;display:none"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeCourseModal()">取消</button>
+      <button class="btn btn-primary" id="courseModalSave" onclick="saveCourse()">💾 儲存課程</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── Config ──
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQHBTOzGo_UCvSdtGk5b2rpdedyBe6ptBsIfxWUntSiOw5wC7leuJu1v59A1xWxRqb/exec";
@@ -498,7 +603,8 @@ function switchPage(name, btn) {
   document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
   document.getElementById("page-" + name).classList.add("active");
   btn.classList.add("active");
-  if (name === "attendance") loadAttendance();
+  if (name === "attendance")   loadAttendance();
+  if (name === "courses")      loadCoursesMgmt();
   if (name === "effectiveness") loadEffectiveness();
 }
 
@@ -761,6 +867,168 @@ function exportCoursesExcel() {
       XLSX.utils.book_append_sheet(wb, ws, "課程清單");
       XLSX.writeFile(wb, `TTQS課程清單_${today()}.xlsx`);
     });
+}
+
+// ══════════════════════════════════���═════════
+// 課程管理
+// ════════════════════════════════════════════
+let allCoursesMgmt = [];
+let editingCourseId = null;
+
+const COURSE_STATUS_LABEL = { open: "開放報名", waitlist: "候補中", closed: "截止報名" };
+const COURSE_STATUS_CLASS  = { open: "badge-confirmed", waitlist: "badge-waiting", closed: "badge-cancelled" };
+
+function loadCoursesMgmt() {
+  document.getElementById("courseMgmtTable").innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div>載入中...</div>';
+  fetch(`${APPS_SCRIPT_URL}?action=getCourses`)
+    .then(r => r.json())
+    .then(d => {
+      allCoursesMgmt = d.courses || [];
+      filterCourseMgmt();
+    })
+    .catch(() => {
+      document.getElementById("courseMgmtTable").innerHTML = '<div class="empty">載入失敗，請重新整理</div>';
+    });
+}
+
+function filterCourseMgmt() {
+  const q  = document.getElementById("courseSearch").value.toLowerCase();
+  const st = document.getElementById("courseStatusFilter").value;
+  const rows = allCoursesMgmt.filter(c => {
+    if (q && !c.title.toLowerCase().includes(q)) return false;
+    if (st && c.status !== st) return false;
+    return true;
+  });
+
+  document.getElementById("courseMgmtCount").textContent = `共 ${rows.length} 筆`;
+  if (!rows.length) {
+    document.getElementById("courseMgmtTable").innerHTML =
+      '<div class="empty"><div class="icon">📭</div>查無課程</div>';
+    return;
+  }
+
+  document.getElementById("courseMgmtTable").innerHTML = `
+    <table>
+      <thead><tr>
+        <th>課程名稱</th><th>日期 / 時間</th><th>講師</th>
+        <th>名額</th><th>適用部門</th><th>狀態</th><th style="text-align:center">操作</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(c => `<tr>
+          <td>
+            <strong>${c.title}</strong>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.type || ''} ${c.location ? '· ' + c.location : ''}</div>
+          </td>
+          <td>${c.date || '—'}<div style="font-size:11px;color:var(--muted)">${c.time || ''}</div></td>
+          <td>${c.instructor || '—'}</td>
+          <td>${c.enrolled} / ${c.quota || '∞'}</td>
+          <td>${c.dept || '全部'}</td>
+          <td><span class="badge ${COURSE_STATUS_CLASS[c.status] || ''}">${COURSE_STATUS_LABEL[c.status] || c.status}</span></td>
+          <td style="text-align:center;white-space:nowrap">
+            <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;margin-right:4px"
+              onclick="openCourseModal('${c.id}')">✏️ 編輯</button>
+            <button class="btn" style="padding:5px 12px;font-size:12px;background:#fee2e2;color:#dc2626;border:none"
+              onclick="confirmDeleteCourse('${c.id}','${c.title.replace(/'/g,"\\'")}')">🗑</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function openCourseModal(courseId) {
+  editingCourseId = courseId || null;
+  if (courseId) {
+    const c = allCoursesMgmt.find(x => x.id === courseId);
+    if (!c) return;
+    document.getElementById("courseModalTitle").textContent = "編輯課程";
+    document.getElementById("mTitle").value       = c.title || '';
+    document.getElementById("mInstructor").value  = c.instructor || '';
+    document.getElementById("mType").value        = c.type || '';
+    document.getElementById("mDate").value        = c.date || '';
+    document.getElementById("mTime").value        = c.time || '';
+    document.getElementById("mCapacity").value    = c.quota || '';
+    document.getElementById("mLocation").value    = c.location || '';
+    document.getElementById("mDept").value        = c.dept || '';
+    document.getElementById("mStatus").value      = c.statusOverride || '';
+    document.getElementById("mDesc").value        = c.description || '';
+  } else {
+    document.getElementById("courseModalTitle").textContent = "新增課程";
+    ["mTitle","mInstructor","mType","mTime","mLocation","mDesc"].forEach(id =>
+      document.getElementById(id).value = '');
+    document.getElementById("mDate").value     = '';
+    document.getElementById("mCapacity").value = '';
+    document.getElementById("mDept").value     = '';
+    document.getElementById("mStatus").value   = '';
+  }
+  setModalMsg('');
+  document.getElementById("courseModal").classList.add("open");
+}
+
+function closeCourseModal() {
+  document.getElementById("courseModal").classList.remove("open");
+  editingCourseId = null;
+}
+
+function setModalMsg(msg, isErr) {
+  const el = document.getElementById("courseModalMsg");
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+  el.style.color = isErr ? 'var(--danger)' : 'var(--success)';
+}
+
+function saveCourse() {
+  const title      = document.getElementById("mTitle").value.trim();
+  const instructor = document.getElementById("mInstructor").value.trim();
+  const date       = document.getElementById("mDate").value.trim();
+  if (!title)      { setModalMsg("請填寫課程名稱", true); return; }
+  if (!instructor) { setModalMsg("請填寫講師", true); return; }
+  if (!date)       { setModalMsg("請填寫課程日期", true); return; }
+
+  const btn = document.getElementById("courseModalSave");
+  btn.textContent = "儲存中…"; btn.disabled = true;
+
+  const payload = {
+    action: "saveCourse",
+    token:  ADMIN_TOKEN,
+    courseId: editingCourseId || "",
+    title, instructor,
+    type:           document.getElementById("mType").value.trim(),
+    date,
+    time:           document.getElementById("mTime").value.trim(),
+    capacity:       parseInt(document.getElementById("mCapacity").value) || 0,
+    location:       document.getElementById("mLocation").value.trim(),
+    dept:           document.getElementById("mDept").value,
+    statusOverride: document.getElementById("mStatus").value,
+    description:    document.getElementById("mDesc").value.trim()
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST", mode: "no-cors",
+    body: JSON.stringify(payload),
+    headers: { "Content-Type": "text/plain" }
+  })
+  .then(() => {
+    btn.textContent = "💾 儲存課程"; btn.disabled = false;
+    closeCourseModal();
+    setModalMsg('');
+    setTimeout(() => loadCoursesMgmt(), 1400);
+  })
+  .catch(() => {
+    btn.textContent = "💾 儲存課程"; btn.disabled = false;
+    setModalMsg("連線失敗，請重試", true);
+  });
+}
+
+function confirmDeleteCourse(courseId, title) {
+  if (!confirm(`確定要刪除「${title}」？\n（已有的報名記錄不受影響，但課程將從清單移除）`)) return;
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST", mode: "no-cors",
+    body: JSON.stringify({ action: "deleteCourse", token: ADMIN_TOKEN, courseId }),
+    headers: { "Content-Type": "text/plain" }
+  })
+  .then(() => setTimeout(() => loadCoursesMgmt(), 1400))
+  .catch(() => alert("刪除失敗，請重試"));
 }
 
 function today() {
