@@ -1258,14 +1258,21 @@ async function queryMyRecords() {
     window._lastQueryEmpId = empId;
     window._lastQueryEmail = email;
 
+    const attendBadge = (r) => {
+      if (!r.attendStatus) return '—';
+      if (r.attendStatus === 'present') return `<span style="color:#16a34a;font-weight:700">✅ 已出席</span>${r.checkInTime ? `<br><span style="font-size:11px;color:#6b7280">${r.checkInTime}</span>` : ''}`;
+      if (r.attendStatus === 'absent')  return `<span style="color:#dc2626;font-weight:700">❌ 缺席</span>`;
+      return `<span style="color:#d97706">⏳ 未簽到</span>`;
+    };
     result.innerHTML = `
       <table class="record-table">
-        <thead><tr><th>課程名稱</th><th>報名時間</th><th>狀態</th><th>操作</th></tr></thead>
+        <thead><tr><th>課程名稱</th><th>報名時間</th><th>報名狀態</th><th>出席狀態</th><th>操作</th></tr></thead>
         <tbody>
           ${data.records.map(r => `<tr>
             <td>${r.courseTitle}</td>
             <td>${r.courseDate}</td>
             <td><span class="status-badge status-${r.status}">${r.statusLabel}</span></td>
+            <td style="font-size:13px">${attendBadge(r)}</td>
             <td>${r.status === 'confirmed'
               ? `<button onclick="cancelMyEnrollment('${r.enrollId}','${r.courseTitle.replace(/'/g,"\\'")}','${empId}','${email}')"
                    style="font-size:11px;padding:3px 10px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:5px;cursor:pointer">取消報名</button>`
@@ -1537,4 +1544,4 @@ function resetTNA() {
 
 </script>
 </body>
-</html>
+</html>                                                                                                                                                                                                                                                                                                  
