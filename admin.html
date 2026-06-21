@@ -781,10 +781,10 @@ function filterTable() {
 // ── Attendance ──
 function loadAttendance() {
   document.getElementById("attendTable").innerHTML = '<div class="loading-wrap"><div class="spinner"></div>載入中...</div>';
-  fetch(`${APPS_SCRIPT_URL}?action=getAllEnrollments&token=${encodeURIComponent(ADMIN_TOKEN)}`)
+  fetch(`${APPS_SCRIPT_URL}?action=getAllAttendance&token=${encodeURIComponent(ADMIN_TOKEN)}`)
     .then(r => r.json())
     .then(d => {
-      allAttendData = d.enrollments || [];
+      allAttendData = d.attendance || [];
       // populate course filter
       const courses = [...new Set(allAttendData.map(r => r.courseTitle))];
       const sel = document.getElementById("attendCourseFilter");
@@ -800,25 +800,65 @@ function loadAttendance() {
 function renderAttendTable() {
   const course = document.getElementById("attendCourseFilter").value;
   const rows = allAttendData.filter(r => !course || r.courseTitle === course);
-  document.getElementById("attendCount").textContent = `共 ${rows.length} 筆`;
+  const checkedIn = rows.filter(r => r.attendStatus === "present").length;
+  const absent    = rows.filter(r => r.attendStatus === "absent").length;
+  document.getElementById("attendCount").textContent =
+    `共 ${rows.length} 筆 ｜ ✅ 已出席 ${checkedIn} ｜ ❌ 缺席 ${absent} ｜ ⏳ 未簽到 ${rows.length - checkedIn - absent}`;
   if (!rows.length) {
     document.getElementById("attendTable").innerHTML = '<div class="empty"><div class="icon">📭</div>查無記錄</div>';
     return;
   }
   document.getElementById("attendTable").innerHTML = `
     <table>
-      <thead><tr><th>課程名稱</th><th>員工編號</th><th>姓名</th><th>部門</th><th>Email</th><th>狀態</th></tr></thead>
+      <thead><tr><th>課程名稱</th><th>員工編號</th><th>姓名</th><th>部門</th><th>出席狀態</th><th>簽到時間</th><th>操作</th></tr></thead>
       <tbody>
-        ${rows.map(r => `<tr>
-          <td>${r.courseTitle}</td>
-          <td>${r.empId}</td>
-          <td><strong>${r.name}</strong></td>
-          <td>${r.dept}</td>
-          <td style="font-size:12px">${r.email}</td>
-          <td><span class="badge badge-confirmed">已確認</span></td>
-        </tr>`).join("")}
+        ${rows.map((r, idx) => {
+          const statusBadge = r.attendStatus === "present"
+            ? '<span class="badge badge-confirmed">✅ 已出席</span>'
+            : r.attendStatus === "absent"
+            ? '<span class="badge badge-cancelled">❌ 缺席</span>'
+            : '<span class="badge" style="background:#f1f5f9;color:#64748b">⏳ 未簽到</span>';
+          return `<tr id="attend-row-${idx}">
+            <td>${r.courseTitle}</td>
+            <td>${r.empId}</td>
+            <td><strong>${r.name}</strong></td>
+            <td>${r.dept}</td>
+            <td>${statusBadge}</td>
+            <td style="font-size:12px;color:var(--muted)">${r.checkInTime || "—"}</td>
+            <td>
+              <select onchange="updateAttendStatus('${r.courseId}','${r.empId}',this.value,${idx})"
+                style="font-size:12px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;cursor:pointer">
+                <option value="">─ 改狀態</option>
+                <option value="present">✅ 已出席</option>
+                <option value="absent">❌ 缺席</option>
+                <option value="未簽到">⏳ 未簽到</option>
+              </select>
+            </td>
+          </tr>`;
+        }).join("")}
       </tbody>
     </table>`;
+}
+
+async function updateAttendStatus(courseId, empId, newStatus, rowIdx) {
+  if (!newStatus) return;
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: "POST", mode: "no-cors",
+      body: JSON.stringify({ action: "updateAttendance", token: ADMIN_TOKEN, courseId, empId, attendStatus: newStatus }),
+      headers: { "Content-Type": "text/plain" }
+    });
+    // 樂觀更新本地資料
+    const row = allAttendData.find(r => r.courseId === courseId && r.empId === empId);
+    if (row) {
+      row.attendStatus = newStatus;
+      if (newStatus !== "present") row.checkInTime = "";
+    }
+    await new Promise(r => setTimeout(r, 800));
+    renderAttendTable();
+  } catch(e) {
+    alert("更新失敗，請重試");
+  }
 }
 
 // ── Export Excel ──
@@ -859,8 +899,8 @@ function exportAttendExcel() {
     "員工編號": r.empId,
     "姓名": r.name,
     "部門": r.dept,
-    "Email": r.email,
-    "出席狀態": "已確認報名"
+    "出席狀態": r.attendStatus === "present" ? "已簽到" : "未簽到",
+    "簽到時間": r.checkInTime || ""
   })));
   XLSX.utils.book_append_sheet(wb, ws, "出席記錄");
   XLSX.writeFile(wb, `TTQS出席記錄_${today()}.xlsx`);
