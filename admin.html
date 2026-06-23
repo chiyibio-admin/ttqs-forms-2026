@@ -528,8 +528,12 @@
       <span id="courseModalTitle">新增課程</span>
       <button class="modal-close" onclick="closeCourseModal()">✕</button>
     </div>
-    <div id="courseModalId" style="font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:14px;display:none">
-      課程ID：<span id="courseModalIdVal"></span>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">
+        課程 ID <span id="courseModalIdHint" style="font-weight:400;color:#94a3b8">（自訂，例：D-2026-001）</span>
+      </label>
+      <input class="modal-input" id="mCourseId" placeholder="例：D-2026-001"
+        style="font-family:monospace;letter-spacing:.04em">
     </div>
     <div class="modal-grid">
       <div class="modal-field full">
@@ -1096,12 +1100,16 @@ function filterCourseMgmt() {
 
 function openCourseModal(courseId) {
   editingCourseId = courseId || null;
+  const idInput = document.getElementById("mCourseId");
+  const idHint  = document.getElementById("courseModalIdHint");
   if (courseId) {
     const c = allCoursesMgmt.find(x => x.id === courseId);
     if (!c) return;
     document.getElementById("courseModalTitle").textContent = "編輯課程";
-    document.getElementById("courseModalIdVal").textContent = c.id;
-    document.getElementById("courseModalId").style.display = "block";
+    idInput.value    = c.id;
+    idInput.readOnly = true;
+    idInput.style.background = "#f1f5f9";
+    idHint.textContent = "（編輯時課程 ID 不可更改）";
     document.getElementById("mTitle").value       = c.title || '';
     document.getElementById("mInstructor").value  = c.instructor || '';
     document.getElementById("mType").value        = c.type || '';
@@ -1114,7 +1122,10 @@ function openCourseModal(courseId) {
     document.getElementById("mDesc").value        = c.description || '';
   } else {
     document.getElementById("courseModalTitle").textContent = "新增課程";
-    document.getElementById("courseModalId").style.display = "none";
+    idInput.value    = '';
+    idInput.readOnly = false;
+    idInput.style.background = '';
+    idHint.textContent = "（自訂，例：D-2026-001）";
     ["mTitle","mInstructor","mType","mTime","mLocation","mDesc"].forEach(id =>
       document.getElementById(id).value = '');
     document.getElementById("mDate").value     = '';
@@ -1139,12 +1150,18 @@ function setModalMsg(msg, isErr) {
 }
 
 function saveCourse() {
+  const customId   = document.getElementById("mCourseId").value.trim();
   const title      = document.getElementById("mTitle").value.trim();
   const instructor = document.getElementById("mInstructor").value.trim();
   const date       = document.getElementById("mDate").value.trim();
+  if (!customId)   { setModalMsg("請填寫課程 ID", true); return; }
   if (!title)      { setModalMsg("請填寫課程名稱", true); return; }
   if (!instructor) { setModalMsg("請填寫講師", true); return; }
   if (!date)       { setModalMsg("請填寫課程日期", true); return; }
+  // 新增時檢查 ID 是否已存在
+  if (!editingCourseId && allCoursesMgmt.some(c => c.id === customId)) {
+    setModalMsg(`課程 ID「${customId}」已存在，請使用其他編號`, true); return;
+  }
 
   const btn = document.getElementById("courseModalSave");
   btn.textContent = "儲存中…"; btn.disabled = true;
@@ -1152,7 +1169,7 @@ function saveCourse() {
   const payload = {
     action: "saveCourse",
     token:  ADMIN_TOKEN,
-    courseId: editingCourseId || "",
+    courseId: editingCourseId || customId,
     title, instructor,
     type:           document.getElementById("mType").value.trim(),
     date,
