@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTQS 表單儀表板｜奇異生技 |改版前|</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    color: white;
+    padding: 28px 40px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .header-left h1 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .header-left p { font-size: 13px; opacity: 0.65; margin-top: 4px; }
+  .header-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: #e0e7ff;
+  }
+
+  /* Tabs */
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    background: #1a1a2e;
+    padding: 0 40px;
+    overflow-x: auto;
+  }
+  .tab-nav::-webkit-scrollbar { height: 3px; }
+  .tab-nav::-webkit-scrollbar-thumb { background: #e63946; border-radius: 2px; }
+
+  .tab-btn {
+    padding: 13px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.85); }
+  .tab-btn.active { color: white; border-bottom-color: currentColor; }
+
+  /* Tab accent colors */
+  .tab-btn[data-tab="instructor-pre"].active  { color: #7eceff; border-color: #7eceff; }
+  .tab-btn[data-tab="instructor-post"].active { color: #74f0cc; border-color: #74f0cc; }
+  .tab-btn[data-tab="ta-pre"].active          { color: #ffb347; border-color: #ffb347; }
+  .tab-btn[data-tab="ta-post"].active         { color: #ff8fab; border-color: #ff8fab; }
+  .tab-btn[data-tab="student-pre"].active     { color: #b5e48c; border-color: #b5e48c; }
+  .tab-btn[data-tab="student-post"].active    { color: #c77dff; border-color: #c77dff; }
+
+  /* Content */
+  .content { padding: 32px 40px; max-width: 1300px; margin: 0 auto; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 18px;
+  }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+  .card-header { display: flex; align-items: flex-start; gap: 10px; }
+  .card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: var(--accent);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-top: 2px;
+    opacity: 0.85;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #1a1a2e;
+  }
+  .card-page { font-size: 11px; color: #888; margin-top: 2px; }
+
+  .card-actions { display: flex; gap: 8px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-form {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-form:hover { filter: brightness(1.1); }
+  .btn-sheet {
+    background: #f0f4f8;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+  }
+  .btn-sheet:hover { background: #e2e8f0; }
+
+  .btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  .note {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: -4px;
+  }
+
+  /* Accent per section */
+  [data-tab="instructor-pre"]  .card { --accent: #3a86ff; }
+  [data-tab="instructor-post"] .card { --accent: #06d6a0; }
+  [data-tab="ta-pre"]          .card { --accent: #fb8500; }
+  [data-tab="ta-post"]         .card { --accent: #e63946; }
+  [data-tab="student-pre"]     .card { --accent: #57cc99; }
+  [data-tab="student-post"]    .card { --accent: #9b5de5; }
+
+  /* Count badge in tab */
+  .count {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-size: 11px;
+    margin-left: 5px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    .header { padding: 20px; }
+    .tab-nav { padding: 0 10px; }
+    .content { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>📋 TTQS 表單儀表板</h1>
+    <p>奇異生技｜(改版前)年度訓練品質管理系統</p>
+  </div>
+  <div class="header-badge">共 30 份表單</div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="instructor-pre"  onclick="showTab('instructor-pre',  this)">講師課前 <span class="count">6</span></button>
+  <button class="tab-btn"        data-tab="instructor-post" onclick="showTab('instructor-post', this)">講師課後 <span class="count">1</span></button>
+  <button class="tab-btn"        data-tab="ta-pre"          onclick="showTab('ta-pre',          this)">助教課前 <span class="count">4</span></button>
+  <button class="tab-btn"        data-tab="ta-post"         onclick="showTab('ta-post',         this)">助教課後 <span class="count">7</span></button>
+  <button class="tab-btn"        data-tab="student-pre"     onclick="showTab('student-pre',     this)">學員課前 <span class="count">4</span></button>
+  <button class="tab-btn"        data-tab="student-post"    onclick="showTab('student-post',    this)">學員課後 <span class="count">10</span></button>
+</div>
+
+<div class="content">
+
+  <!-- ═══════════ 講師課前 ═══════════ -->
+  <div class="tab-panel active" data-tab="instructor-pre">
+    <p class="section-title">講師課前文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D1</span>
+          <div>
+            <div class="card-title">講師資料表</div>
+            <div class="card-page">P58</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/o1VWLrLdeQg5EAdY9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1v7kL1_wi9s2rKGvv0ttNvKgeKXKaxiNv6KzRBEnCGTo/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">講師邀請函</div>
+            <div class="card-page">P59｜課前 3 個月繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/ACNzC5b5eCjq9rDt9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1LNasWPWvd7gHCtdidefh_5hPt5WO62om_HMfepHxDck/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">講師邀請確認單</div>
+            <div class="card-page">P61</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/dj9zp11JvcKUW1DQ7" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/14dzVheKvmItJCZ9F7qiFd5zXqK94sCuTSo3Stl-H3og/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            回覆 v1
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1ET9bXEF54K-f7rzzhS4TvUd1DEKMQzpgZr4Q4GKgW3s/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            回覆 v2
+          </a>
+        </div>
+        <div class="note">* 有兩個版本的回覆表單</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D1</span>
+          <div>
+            <div class="card-title">訓練課程設計審查表</div>
+            <div class="card-page">P53 · P58</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/UfJWxR4aEGpQDzWV7" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1M63SjUlUS23WT7YFeXaVnNFEJs8WnKriNqe6TLUICWs/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D1</span>
+          <div>
+            <div class="card-title">講師審查評分表</div>
+            <div class="card-page">P54 · P55 · P56</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/sQToLBw6i56QKxdB8" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1p8FFueNKiFTI4XOu332Q4C1-61zDh8ar9JvM89Ihz_I/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">講師溝通表</div>
+            <div class="card-page">P71｜課前繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/P37ETryjKPCd5cC1A" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1UXv3GQIAgxL7Ry8kuO065h-aCXKNEKxK2mGjmYcI5dA/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ 講師課後 ═══════════ -->
+  <div class="tab-panel" data-tab="instructor-post">
+    <p class="section-title">講師課後文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">講師課後回饋表</div>
+            <div class="card-page">P91｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/bjvC7PUykAA3oshu5" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1RT_kjx6iak-hLpqYp63K6k-uzK9EMgvllZ5e6kAR-wg/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ 助教課前 ═══════════ -->
+  <div class="tab-panel" data-tab="ta-pre">
+    <p class="section-title">助教課前文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D1</span>
+          <div>
+            <div class="card-title">訓練場地資料表</div>
+            <div class="card-page">P62</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/6Zg161Hx6EPnBo2D6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1oeluvq4sP5ODdlogriZnzGqbdyW3o7aoe6Wpo5V3DyQ/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">學員上課通知單</div>
+            <div class="card-page">P69</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/PVjv1MweRvmKp81a6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/12RsqmjwG6nuE_qh008I6-c-SizrpjcFTXYqUu9P5hbU/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">P</span>
+          <div>
+            <div class="card-title">課程設計表</div>
+            <div class="card-page">課前填寫</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/tGJuxCYL1w2VHLRu6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/14puhCOsR0apf-aXjoaWLtWITERPzbbT--_oT3tAVMpA/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">課程前中後執行檢點表</div>
+            <div class="card-page">課前填寫</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/nT6UH7fXumDZHEck6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1qjSU8hvZ5GK50PjZTJA7V618Bkm8De4cTsTtTn5FIDw/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ 助教課後 ═══════════ -->
+  <div class="tab-panel" data-tab="ta-post">
+    <p class="section-title">助教課後文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D2</span>
+          <div>
+            <div class="card-title">督課日誌</div>
+            <div class="card-page">P81｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/SCQmYaRdvY5Wnnh59" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1LxQGRVfsuie1nw67opyfTFI3fc_enK6MTsD4d6QQMrk/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">培訓過程監控表</div>
+            <div class="card-page">P72｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/gacMTx7oeMYqNh9M9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1WpcvQilcDbIgX_n7EWeKnonXmj4IcooDFaOtVsz2Z-0/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">異常處理單</div>
+            <div class="card-page">P73｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/V7PTz5W7autUZ9sm7" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/19HTluE2AAxj7NBA4p3ggUhtEh7XYRd8o8zaX3EtC0vM/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">訓練結案評估報告表</div>
+            <div class="card-page">P78｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/ouusbx3dDvnVcSDk6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1-i08cnhtMCaOcdNneVc8IqK3vPQWQaE4gyL_aMjbOt8/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">異常狀況矯正與預防處理彙</div>
+            <div class="card-page">P80｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/PaNY5sXDc914a6fM6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1gdaE-Oz3PZkB7xT5g0FisM0FKxl94ubKB-5DvGYZFvM/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">學員課後追蹤調查表</div>
+            <div class="card-page">P85｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/zPoGENLk6YxSUW1Q6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1qz130nDyhIUqegBRKxdg54QPtCFW-qcYTfsgHRm7owU/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">R</span>
+          <div>
+            <div class="card-title">定期綜合檢討報告書</div>
+            <div class="card-page">課後一個月繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/TMZsVKBUehtbCoWL9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/12J5vX_rFeUz9UHiei8sH8WQ4pUFEluX_KedN7MrO0IM/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ 學員課前 ═══════════ -->
+  <div class="tab-panel" data-tab="student-pre">
+    <p class="section-title">學員課前文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">P</span>
+          <div>
+            <div class="card-title">招募學員訓練需求調查問卷</div>
+            <div class="card-page">P66</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/wqKLGieZ4E8r9A71A" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1yfvibqhiFL5taie1Pk0Hr82JFDuaA8MKfwxwLo4eIcs/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">P</span>
+          <div>
+            <div class="card-title">學員專長能力等級分級表</div>
+            <div class="card-page">P48</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/n5uy5SyZ597qET7i8" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1q69lXYtudRBz7EGRW83XUsfRMDthE9eSb98zev4b16w/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">P</span>
+          <div>
+            <div class="card-title">職能落差分析表</div>
+            <div class="card-page">P49</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/v4AWkgWtgsPxWjHL6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1mIV_pixBWTPwJclB6eFI2UDQDmnHuajrpKavKz78drw/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">D1</span>
+          <div>
+            <div class="card-title">派外訓練申請單</div>
+            <div class="card-page">P43</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/1kuGZgRAAZc17GBL9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1nVwFk7ZhWsNwCuqRlJobwSaSa3Etl1HWvAyXKptjGjM/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ 學員課後 ═══════════ -->
+  <div class="tab-panel" data-tab="student-post">
+    <p class="section-title">學員課後文件</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O17a</span>
+          <div>
+            <div class="card-title">滿意度調查表</div>
+            <div class="card-page">課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/KpBcmX7ES1sT7RVq6" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1zfn_71ZK6CSw-VX7Uh5UA5X4aVm2g5ZUZK_1N2h-Dfk/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O17b</span>
+          <div>
+            <div class="card-title">訓練課程心得報告表</div>
+            <div class="card-page">P83｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/HPbZM4zCz33eUpKF8" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1VTd3kdGJI1WbdLJs2rI6R_EmDtIImADjJbjY9wl3E9Q/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">派外訓練心得</div>
+            <div class="card-page">P44｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/wkuxbpuKsawRNeSN9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1Tf10frobC6eVDoBZ-jz7Q2Mq3ShA0Ex4SbAKAxS91bU/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">專業諮詢師訓練滿意度及需求調查表</div>
+            <div class="card-page">P82｜課後追蹤 3 個月</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/tt3mjSNRuWJ4uUGf8" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1bVJ7FFGZLhNHdgGI71SqZZmu1hY_kXHOLZUlXRZHyMI/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">內部講師訓練滿意度及需求調查表</div>
+            <div class="card-page">P82｜課後追蹤 3 個月</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/EUaaVjK79FtocW7y5" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1tdv3BcG8A2pXJ7FkPHv_BoAaeTyi6XqeGswF9xR7_Fg/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">學員意見反應及處理單</div>
+            <div class="card-page">P74｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/gCkT5VUy15EgzqNp9" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1npsfN4vyAMs3vm0ROtNw3ml9BIy0L263nGX9bKWO56o/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">訓練考核表</div>
+            <div class="card-page">P75｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/RPkdZhVQuqS166wf7" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1RnL_rTtvTqGvYs6bFrczr-G9r3kYwKrfvHoR4mpexcw/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">績效評估表（非管理職間接人員）</div>
+            <div class="card-page">P76 · P77｜課後 3 個月</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/nrXAtirv1sfqDoFd7" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1LQFTcJbiE8pr2NfOuB8ELowwSVJ3J3NIw2SN1w26Jio/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">訓練成效調查表（直屬主管填寫）</div>
+            <div class="card-page">P87｜課後繳交</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://forms.gle/WN3ewv77LDJLkHt49" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1-AbwhE1qdYawH-jDQsLiega0Dsr6iHv-W9Iei1wuh6w/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-tag">O</span>
+          <div>
+            <div class="card-title">年度職員考核表</div>
+            <div class="card-page">年度評核</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <a class="btn btn-form" href="https://docs.google.com/forms/d/e/1FAIpQLSfsrlmT2sKjx7ZNRC19eJ-_eAacYwN3TpnLKcAxDeWVEak3Nw/viewform" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M9 16h6M7 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2"/><rect x="7" y="2" width="10" height="4" rx="1"/></svg>
+            空白表單
+          </a>
+          <a class="btn btn-sheet" href="https://docs.google.com/spreadsheets/d/1hS_TGqtp86J9gmMP9DxTBKNFEB9l2nW9JkykP1KbyVE/edit" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+            表單回覆
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-tab="' + id + '"].tab-panel').classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
