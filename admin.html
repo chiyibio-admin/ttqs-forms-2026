@@ -1457,5 +1457,22 @@ function exportEffectivenessExcel() {
   XLSX.writeFile(wb, `TTQS成效分析_${year || "全部"}_${today()}.xlsx`);
 }
 </script>
+
+<!-- 快速連結區 -->
+<div style="max-width:1200px;margin:2rem auto;padding:1rem 1.5rem;background:#fff;border-radius:8px;border:1px solid #e2e8f0;">
+  <div style="font-size:0.85rem;font-weight:600;color:#64748b;margin-bottom:0.75rem;">📎 相關儀表板連結</div>
+  <div style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+    <a href="https://chiyibio-admin.github.io/ttqs-forms-2026/index.html" target="_blank"
+       style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;background:#1a3c6e;color:#fff;border-radius:6px;text-decoration:none;font-size:0.875rem;font-weight:500;"
+       onmouseover="this.style.background='#2d5fa3'" onmouseout="this.style.background='#1a3c6e'">
+      📊 TTQS 表單儀表板（115年總表）
+    </a>
+    <a href="https://chiyibio-admin.github.io/ttqs-forms-2026/TTQS%E8%A1%A8%E5%96%AE%E5%84%80%E8%A1%A8%E6%9D%BF(%E6%94%B9%E7%89%88%E5%89%8D).html" target="_blank"
+       style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;background:#4a6fa5;color:#fff;border-radius:6px;text-decoration:none;font-size:0.875rem;font-weight:500;"
+       onmouseover="this.style.background='#2d5fa3'" onmouseout="this.style.background='#4a6fa5'">
+      📋 TTQS 表單儀表板（114年含之前）
+    </a>
+  </div>
+</div>
 </body>
 </html>
