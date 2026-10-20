@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>D-007／D-001_課程設計與審查_115年</title>
+<style>
+:root{--bg:#f5f7fa;--card:#fff;--accent:#1a56db;--accent2:#0f766e;--text:#1a1a2e;--muted:#64748b;--border:#e2e8f0;--req:#dc2626;--shadow:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft JhengHei","Noto Sans TC",Arial,sans-serif;background:var(--bg);color:var(--text);padding:28px 16px;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.hdr{background:var(--accent);border-radius:14px;padding:30px 28px 0;text-align:center;box-shadow:0 4px 16px rgba(26,86,219,.25);transition:background .2s}
+body.t-design .hdr{background:var(--accent2);box-shadow:0 4px 16px rgba(15,118,110,.25)}
+.hdr h1{font-size:1.6rem;font-weight:600;color:#fff}
+.hdr .sub{color:rgba(255,255,255,.85);font-size:.9rem;margin-top:6px}
+.tabs{display:flex;gap:6px;margin-top:20px}
+.tab{flex:1;background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px 10px 0 0;padding:12px 8px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit}
+.tab small{display:block;font-weight:400;font-size:.78rem;opacity:.85}
+.tab.on{background:var(--bg);color:var(--text)}
+.flow{display:flex;align-items:center;gap:8px;justify-content:center;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.flow b{background:#fff;border:1px solid var(--border);border-radius:20px;padding:4px 12px;color:var(--text);font-weight:600}
+.flow b.on{border-color:currentColor}
+body.t-design .flow b.d,body.t-review .flow b.r{color:#fff;background:var(--accent2);border-color:var(--accent2)}
+body.t-review .flow b.r{background:var(--accent);border-color:var(--accent)}
+.card{background:var(--card);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-title{font-size:.97rem;font-weight:700;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--accent)}
+#fDesign .card-title{color:var(--accent2);border-color:var(--accent2)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+.f{display:flex;flex-direction:column;gap:5px}
+label{font-size:.9rem;color:var(--muted);font-weight:500}
+label .r{color:var(--req);margin-left:2px}
+.hint{font-size:.8rem;color:#94a3b8;line-height:1.5}
+input[type=text],input[type=date],input[type=number],select,textarea{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:10px 13px;font-size:1rem;color:var(--text);width:100%;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+textarea{min-height:96px;resize:vertical;line-height:1.6}
+.pick{background:#f0f7ff;border:1px solid #bfdbfe}
+#fDesign .pick{background:#effaf8;border-color:#99d5cc}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices.row{flex-direction:row;flex-wrap:wrap}
+.choices.row .ci{flex:1 1 140px}
+.ci{display:flex;align-items:center;gap:10px;font-size:1rem;padding:9px 12px;border-radius:8px;cursor:pointer;border:1.5px solid var(--border)}
+.ci:hover{border-color:var(--accent);background:#f8faff}
+.ci input{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0}
+.scale-row{background:#f8faff;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:8px}
+.scale-lbl{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.scale-mid{display:flex;gap:8px;flex:1}
+.sc{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sc span{font-size:.9rem;color:var(--muted);font-weight:600}
+.sc input{width:18px;height:18px;accent-color:var(--accent)}
+.info{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;padding:11px 18px;text-align:center;font-size:.93rem;color:#1e40af}
+.sumbox{background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;padding:0}
+.sumbox summary{cursor:pointer;padding:12px 16px;font-weight:600;color:var(--accent2)}
+.sumbox table{width:100%;border-collapse:collapse;font-size:.9rem}
+.sumbox th,.sumbox td{border-top:1px solid var(--border);padding:7px 12px;text-align:left;vertical-align:top;white-space:pre-wrap}
+.sumbox th{width:30%;color:var(--muted);font-weight:500;background:#fff}
+.sub-wrap{text-align:center;padding:4px 0}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:14px 56px;font-size:1.1rem;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(26,86,219,.3)}
+#fDesign .btn{background:var(--accent2);box-shadow:0 4px 12px rgba(15,118,110,.3)}
+.btn:disabled{opacity:.6}
+.ok{display:none;background:#fff;border:1.5px solid #10b981;border-radius:14px;padding:36px;text-align:center}
+.ok h2{font-size:1.4rem;color:#065f46;margin-bottom:8px}
+.ok p{color:#64748b}
+.rc-actions{display:flex;gap:10px;justify-content:center;margin:20px 0 8px;flex-wrap:wrap}
+.rc-btn{background:#1a56db;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit}
+.rc-btn.alt{background:#fff;color:#1a56db;border:1.5px solid #1a56db}
+.rc-btn.go{background:#0f766e}
+.receipt{display:none;text-align:left;margin-top:18px;background:#fff;color:#1a1a2e;padding:24px;border:1px solid #e2e8f0;border-radius:8px}
+.receipt .rc-co{font-size:.9rem;color:#64748b}
+.receipt h3{font-size:1.3rem;margin:4px 0 2px}
+.receipt .rc-meta{font-size:.85rem;color:#64748b;margin-bottom:14px}
+.receipt table{width:100%;border-collapse:collapse;font-size:.92rem;table-layout:fixed}
+.receipt th,.receipt td{border:1px solid #cbd5e1;padding:7px 9px;vertical-align:top;text-align:left;word-break:break-word;white-space:pre-wrap}
+.receipt th{background:#f1f5f9;width:32%;font-weight:600}
+.receipt .rc-sign{margin-top:18px;page-break-inside:avoid}
+.receipt .rc-sign td{border:1px solid #64748b;white-space:normal}
+.receipt .rc-sign .sl{font-weight:600}
+.receipt .rc-sign .sb{height:24mm}
+.receipt .rc-sign .sd{font-size:.8rem;color:#64748b;border-top:1px dashed #cbd5e1;padding-top:4px}
+.footer{text-align:center;font-size:.84rem;color:#94a3b8;padding:8px 0 16px;line-height:1.8}
+.pane{display:none;flex-direction:column;gap:14px}
+.pane.on{display:flex}
+@media(max-width:580px){.grid{grid-template-columns:1fr}.card{padding:18px}.hdr{padding:24px 16px 0}.btn{padding:14px 36px}}
+@media print{@page{size:A4;margin:0}body{background:#fff!important;padding:0!important}
+ .hdr,.flow,.info,form,.footer,.rc-actions,.ok>h2,.ok>p,.pane:not(.on){display:none!important}
+ .ok{border:none!important;padding:0!important;display:block!important}
+ .receipt{display:block!important;border:none;padding:14mm 15mm;margin:0}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="t-design">
+<div class="wrap">
+  <div class="hdr">
+    <h1>課程設計與審查</h1>
+    <div class="sub">奇異生技股份有限公司 · 115年度訓練品質管理</div>
+    <div class="tabs">
+      <button type="button" class="tab on" data-t="design">① 課程設計表<small>D-007 課程規範書｜設計者填寫</small></button>
+      <button type="button" class="tab" data-t="review">② 課程設計審查表<small>D-001｜TTQS推行小組填寫</small></button>
+    </div>
+  </div>
+  <div class="flow"><b class="d">課程規劃組／講師 設計</b>→<b class="r">推行小組 審查</b>→<b>教育長 核定</b></div>
+
+  <!-- ===================== ① 設計 ===================== -->
+  <div class="pane on" id="pDesign">
+  <form id="fDesign" data-code="D-007" data-title="課程設計表（課程規範書）">
+    <div class="card pick"><div class="grid"><div class="full" style="display:flex;flex-direction:column;gap:5px">
+      <label for="dPick">帶入現有課程（115年課程設計表）</label>
+      <select id="dPick" class="picker" data-target="fDesign"></select>
+      <div class="hint">選擇後自動帶入已建檔內容（效益、大綱、資格、時數等），再補齊空白欄位即可。新課程請選「新增課程」。</div>
+    </div></div></div>
+
+    <div class="card"><div class="card-title">📋 基本資訊</div><div class="grid">
+      <div class="f"><label>課程代號<span class="r">*</span></label><input type="text" data-k="code" placeholder="例：HD001" required></div>
+      <div class="f"><label>課程名稱<span class="r">*</span></label><input type="text" data-k="name" required></div>
+      <div class="f"><label>規範書版次<span class="r">*</span></label><input type="text" data-k="ver" value="08" required></div>
+      <div class="f"><label>設計日期<span class="r">*</span></label><input type="date" data-k="ddate" required></div>
+      <div class="f"><label>設計者<span class="r">*</span></label><input type="text" data-k="designer" required></div>
+      <div class="f"><label>講師姓名<span class="r">*</span></label><input type="text" data-k="teacher" required></div>
+    </div></div>
+
+    <div class="card"><div class="card-title">🔍 分析（A）— 為什麼要開這門課</div><div class="grid">
+      <div class="f full"><label>需求來源（對應訓練需求調查／部門）<span class="r">*</span></label><textarea data-k="need" placeholder="例：依 P-001 訓練需求調查及 P-003 職能落差分析，企劃部、行銷公關部共 6 人提出 AI 工具應用需求" required></textarea></div>
+      <div class="f full"><label>對應職能<span class="r">*</span></label><input type="text" data-k="comp" placeholder="例：專業職能－數位工具應用（K/S）" required></div>
+      <div class="f full"><label>課程效益<span class="r">*</span></label><textarea data-k="benefit" required></textarea></div>
+    </div></div>
+
+    <div class="card"><div class="card-title">🎯 設計（D）— 教什麼、教誰</div><div class="grid">
+      <div class="f full"><label>訓練目標（量化、可測量）<span class="r">*</span></label><textarea data-k="goal" placeholder="例：結訓後 80% 學員能獨立以生成式 AI 完成一份工作文件草稿；L1 滿意度 ≥ 90%" required></textarea></div>
+      <div class="f full"><label>課程大綱<span class="r">*</span></label><textarea data-k="outline" style="min-height:140px" required></textarea></div>
+      <div class="f"><label>學員資格<span class="r">*</span></label><input type="text" data-k="stuQual" required></div>
+      <div class="f"><label>講師資格<span class="r">*</span></label><input type="text" data-k="tchQual" required></div>
+      <div class="f"><label>上課人數<span class="r">*</span></label><input type="number" min="1" data-k="people" required></div>
+      <div class="f"><label>時數<span class="r">*</span></label><input type="number" min="0.5" step="0.5" data-k="hours" required></div>
+      <div class="f"><label>上課時間</label><input type="text" data-k="period" placeholder="例：一天"></div>
+      <div class="f"><label>場地<span class="r">*</span></label><input type="text" data-k="venue" required></div>
+      <div class="f full"><label>教學方法（可複選）<span class="r">*</span></label><div class="choices row" data-k="method" data-req="1">
+        <label class="ci"><input type="checkbox" value="講授">講授</label><label class="ci"><input type="checkbox" value="實作">實作</label><label class="ci"><input type="checkbox" value="演練">演練</label><label class="ci"><input type="checkbox" value="分組討論">分組討論</label><label class="ci"><input type="checkbox" value="案例分析">案例分析</label></div>
+        <div class="hint">大綱若有「實作／演練」，請一併勾選，以免與審查內容不一致。</div></div>
+    </div></div>
+
+    <div class="card"><div class="card-title">🧰 開發（D）— 教材與資源</div><div class="grid">
+      <div class="f full"><label>教材名稱與編號<span class="r">*</span></label><textarea data-k="material" placeholder="例：HD001-M01《生成式 AI 工作應用講義》v1" required></textarea></div>
+      <div class="f full"><label>教材來源<span class="r">*</span></label><div class="choices row" data-k="matSrc" data-radio="1">
+        <label class="ci"><input type="radio" name="matSrc" value="內部自編" required>內部自編</label><label class="ci"><input type="radio" name="matSrc" value="講師提供">講師提供</label><label class="ci"><input type="radio" name="matSrc" value="外購">外購</label></div></div>
+      <div class="f"><label>教具編號</label><input type="text" data-k="tool"></div>
+      <div class="f"><label>費用</label><input type="text" data-k="fee" placeholder="例：講師費 NT$ 6,000"></div>
+    </div></div>
+
+    <div class="card"><div class="card-title">📊 評估（E）— 怎麼知道有效</div><div class="grid">
+      <div class="f full"><label>【ADDIE-評估】評估方式設計（可複選）<span class="r">*</span></label><div class="choices row" data-k="evalS" data-req="1">
+        <label class="ci"><input type="checkbox" value="紙筆測驗">紙筆測驗（L2）</label><label class="ci"><input type="checkbox" value="實作評量">實作評量（L2）</label><label class="ci"><input type="checkbox" value="口頭報告">口頭報告（L2）</label><label class="ci"><input type="checkbox" value="觀察評量">觀察評量（L3）</label><label class="ci"><input type="checkbox" value="學員滿意度調查">學員滿意度調查（L1）</label><label class="ci"><input type="checkbox" value="3個月後追蹤">3個月後追蹤（L3）</label></div></div>
+      <div class="f full"><label>對講師評鑑方式（可複選）</label><div class="choices row" data-k="evalT">
+        <label class="ci"><input type="checkbox" value="問卷調查">問卷調查</label><label class="ci"><input type="checkbox" value="面談">面談</label><label class="ci"><input type="checkbox" value="觀察法">觀察法</label><label class="ci"><input type="checkbox" value="綜合座談">綜合座談</label></div></div>
+      <div class="f full"><label>回訓時機</label><input type="text" data-k="retrain" placeholder="例：法規異動時／每年一次"></div>
+    </div></div>
+
+    <div class="card"><div class="card-title">💬 利害關係人</div><div class="grid">
+      <div class="f full"><label>利害關係人意見納入說明（含客戶/顧客需求）<span class="r">*</span></label><textarea data-k="stake" placeholder="例：經企劃部主管確認課程內容符合部門年度目標；納入客服常見問題作為案例" required></textarea></div>
+    </div></div>
+
+    <div class="sub-wrap"><button type="submit" class="btn">送出課程設計表</button></div>
+  </form>
+  <div class="ok" id="okDesign">
+    <h2>✅ 課程設計表已送出</h2><p>下一步：交由 TTQS推行小組進行課程設計審查。</p>
+    <div class="rc-actions">
+      <button type="button" class="rc-btn go" onclick="goReview()">➜ 前往審查此課程</button>
+      <button type="button" class="rc-btn" onclick="window.print()">🖨 列印</button>
+      <button type="button" class="rc-btn alt" onclick="dlPDF('okDesign')">⬇ 下載 PDF 備存</button>
+      <button type="button" class="rc-btn alt" onclick="resetPane('design')">＋ 再填一門</button>
+    </div>
+    <div class="receipt"></div>
+  </div>
+  </div>
+
+  <!-- ===================== ② 審查 ===================== -->
+  <div class="pane" id="pReview">
+  <div class="info">評分標準：5=非常同意 &nbsp;4=同意 &nbsp;3=普通 &nbsp;2=不同意 &nbsp;1=非常不同意</div>
+  <form id="fReview" data-code="D-001" data-title="訓練課程設計審查表">
+    <div class="card pick"><div class="grid"><div class="full" style="display:flex;flex-direction:column;gap:5px">
+      <label for="rPick">選擇要審查的課程</label>
+      <select id="rPick" class="picker" data-target="fReview"></select>
+      <div class="hint">選擇後自動帶入該課程的設計內容（可再修改），並於下方顯示課程設計表摘要供對照。</div>
+    </div></div>
+    <details class="sumbox" id="sumbox" style="margin-top:14px;display:none"><summary>📄 課程設計表摘要（審查標的）</summary><table id="sumtbl"></table></details>
+    </div>
+
+    <div class="card"><div class="card-title">📋 基本資訊</div><div class="grid">
+      <div class="f"><label>審查日期<span class="r">*</span></label><input type="date" data-k="rdate" required></div>
+      <div class="f"><label>課程名稱<span class="r">*</span></label><input type="text" data-k="name" required></div>
+      <div class="f"><label>課程代碼<span class="r">*</span></label><input type="text" data-k="code" required></div>
+      <div class="f"><label>講師姓名<span class="r">*</span></label><input type="text" data-k="teacher" required></div>
+      <div class="f"><label>審查人姓名<span class="r">*</span></label><input type="text" data-k="reviewer" required><div class="hint">審查人不可為該課程設計者</div></div>
+      <div class="f"><label>審查標的（規範書版次）<span class="r">*</span></label><input type="text" data-k="ver" required></div>
+    </div></div>
+    <div class="card"><div class="card-title">📝 填寫內容</div><div class="grid">
+      <div class="f"><label>目標學員族群<span class="r">*</span></label><input type="text" data-k="stuQual" required></div>
+      <div class="f"><label>預計訓練人數<span class="r">*</span></label><input type="text" data-k="people" required></div>
+    </div></div>
+    <div class="card"><div class="card-title">📐 課程設計內容</div><div class="grid">
+      <div class="f full"><label>【ADDIE-分析】需求分析說明<span class="r">*</span></label><textarea data-k="needR" required></textarea></div>
+      <div class="f full"><label>【ADDIE-設計】訓練目標（量化、可測量）<span class="r">*</span></label><textarea data-k="goal" required></textarea></div>
+      <div class="f full"><label>【ADDIE-設計】課程架構與大綱說明<span class="r">*</span></label><textarea data-k="outline" style="min-height:140px" required></textarea></div>
+      <div class="f full"><label>【ADDIE-開發】教材開發說明<span class="r">*</span></label><textarea data-k="materialR" required></textarea></div>
+      <div class="f full"><label>【ADDIE-評估】評估方式設計（可複選）<span class="r">*</span></label><div class="choices" data-k="evalS" data-req="1">
+        <label class="ci"><input type="checkbox" value="紙筆測驗">紙筆測驗</label><label class="ci"><input type="checkbox" value="實作評量">實作評量</label><label class="ci"><input type="checkbox" value="口頭報告">口頭報告</label><label class="ci"><input type="checkbox" value="觀察評量">觀察評量</label><label class="ci"><input type="checkbox" value="學員滿意度調查">學員滿意度調查</label><label class="ci"><input type="checkbox" value="3個月後追蹤">3個月後追蹤</label></div></div>
+    </div></div>
+    <div class="card"><div class="card-title">💬 意見與建議</div><div class="grid">
+      <div class="f full"><label>利害關係人意見納入說明（含客戶/顧客需求）<span class="r">*</span></label><textarea data-k="stake" required></textarea></div>
+    </div></div>
+    <div class="card"><div class="card-title">⭐ 審查評分</div><div class="grid">
+      <div class="f full"><label>課程大綱符合性評分<span class="r">*</span></label><div class="scale-row" data-k="s1" data-radio="1"><span class="scale-lbl">1 不足</span><div class="scale-mid">SCALE_s1</div><span class="scale-lbl">5 充足</span></div></div>
+      <div class="f full"><label>教材品質評分<span class="r">*</span></label><div class="scale-row" data-k="s2" data-radio="1"><span class="scale-lbl">1 不足</span><div class="scale-mid">SCALE_s2</div><span class="scale-lbl">5 充足</span></div></div>
+    </div></div>
+    <div class="card"><div class="card-title">✅ 審查結論</div><div class="grid">
+      <div class="f full"><label>審查結論<span class="r">*</span></label><div class="choices" data-k="result" data-radio="1">
+        <label class="ci"><input type="radio" name="result" value="通過" required>通過</label><label class="ci"><input type="radio" name="result" value="條件通過（需修改）">條件通過（需修改）</label><label class="ci"><input type="radio" name="result" value="不通過（需重新設計）">不通過（需重新設計）</label></div></div>
+      <div class="f full"><label>審查意見與修改建議<span class="r">*</span></label><textarea data-k="comment" required></textarea></div>
+    </div></div>
+    <div class="sub-wrap"><button type="submit" class="btn">送出審查表</button></div>
+  </form>
+  <div class="ok" id="okReview">
+    <h2>✅ 審查表已送出</h2><p>請列印後送教育長核定簽名；條件通過／不通過者，請設計者修正後提高版次重新送審。</p>
+    <div class="rc-actions">
+      <button type="button" class="rc-btn" onclick="window.print()">🖨 列印</button>
+      <button type="button" class="rc-btn alt" onclick="dlPDF('okReview')">⬇ 下載 PDF 備存</button>
+      <button type="button" class="rc-btn alt" onclick="resetPane('review')">＋ 審查下一門</button>
+    </div>
+    <div class="receipt"></div>
+  </div>
+  </div>
+
+  <div class="footer">課程設計表（D-007）＋ 訓練課程設計審查表（D-001）<br>奇異生技股份有限公司 · 115年度訓練品質管理 · D設計 · 指標8、9、10</div>
+</div>
+
+<script>
+const GAS_URL='https://script.google.com/macros/s/AKfycbxVJsHr-QgDlU53xABVoYrklRgUN8wXjJfXE1LGbH1BtVvjbZFvAywr9vsUQJi_Runx/exec';
+const COURSES=[{"code": "HD001", "name": "生成式 AI 輔助工作基礎應用", "benefit": "協助人員正確運用生成式 AI 工具於日常工作中，提升文件處理、資訊整理與工作產出效率，降低重複性作業負擔，促進企業內部數位工作能力提升。", "outline": "1. 生成式 AI 基本概念與企業工作應用情境說明\n2. 生成式 AI 於日常工作中的實務應用範例（如：文件草稿、重點整理、工作說明撰寫、資料初步彙整）\n3. 提示詞（Prompt）設計基礎與實際操作練習\n4. 協助員工運用生成式 AI 提升工作效率與品質\n5. 生成式 AI 使用注意事項與企業內部應用原則說明", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD002", "name": "Local LLM × AI Assistant × Office 自動化應用", "benefit": "導入本地端大型語言模型（Local LLM）結合 AI 助理與 Office 自動化應用，提升內部文件處理與行政作業效率，同時兼顧資料安全與企業機密，降低重複性文書作業負擔，促進企業數位化與智慧化營運。", "outline": "1. Local LLM 概念與企業應用說明\n2. 企業內部 AI Assistant 建置與應用情境\n3. ManyChat AI Agent 設計與應用實務\n4. Excel 自動化報表與 KPI 儀表板應用\n5. PPT AI 快速簡報生成與應用實務", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD003", "name": "AI 輔助市場分析與社群成長策略應用", "benefit": "透過 AI 輔助市場與社群資料整理與分析，協助學員快速掌握市場趨勢與社群成長方向，提升社群經營策略規劃的準確度，讓決策建立在分析依據上，而非經驗判斷，支援品牌與市場的長期發展。", "outline": "1. AI 在商業模式與市場分析中的應用\n2. AI 輔助市場趨勢與競品研究\n3. IG/FB 社群經營與快速成長實務\n4. IG/FB 社群經營與互動管理應用", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD004", "name": "AI 行銷內容產製實務", "benefit": "導入 AI 行銷內容產製工具，提升行銷人員在文案與行銷素材製作上的效率，縮短內容產製時間，降低重複性作業負擔，並建立企業內部標準化的行銷內容產製流程，提升品牌溝通一致性與行銷反應速度。", "outline": "1. AI 行銷工具概述與應用情境說明\n2. 行銷文案、社群貼文與活動素材之 AI 產製實務\n3. AI 輔助品牌訊息一致性與內容優化\n4. 建立企業內部 AI 行銷內容產製流程\n5. 行銷實務案例操作與應用演練", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD005", "name": "ManyChat × Make 行銷與流程自動化", "benefit": "透過 ManyChat 與 Make 串接，建立自動化顧客互動與行銷流程，減少人工回覆與重複性行政作業，提升顧客服務即時性與行銷轉換效率，同時降低人力成本，強化整體營運效率。", "outline": "1. ManyChat 與 Make 工具架構說明\n2. 社群平台與顧客互動流程自動化設計\n3. 顧客名單蒐集與分眾標籤自動化\n4. 行銷與客服流程串接實務\n5. 自動化流程實作與案例演練", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD006", "name": "Excel × AI 商業資料分析與決策支援實務", "benefit": "透過 Excel 與 AI 工具，協助企業進行資料整理、分析與視覺化呈現，讓資料能有效支援管理決策與後續營運規劃。", "outline": "1. 商業資料分析在企業營運中的應用定位\n2. Excel 進行資料統計與分析之實務操作\n3. ChatGPT 輔助資料判讀與分析說明\n4. 圖表化呈現與管理溝通應用\n5. 營運規劃與決策支援案例", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD007", "name": "AI 工具協助講師教材整理", "benefit": "降低講師教材整理與更新所需時間，提升教材內容一致性與可讀性，促進內部知識有效傳承。聚焦於教育訓練與知識整理應用，不涉及營運數據分析。", "outline": "1. 課程與教材盤點基礎\n2. 教材模組化概念說明\n3. 協助教材內容摘要與重點整理\n4. 教材重複內容辨識與整併方式\n5. 教材更新流程與內部協作方式", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD008", "name": "ERP × AI 資料整合與營運指標分析實務", "benefit": "以 ERP 結合 AI 之資料整理與決策輔助為核心，協助人員提升資料判讀效率與管理決策品質，在既有系統架構下，安全導入 AI 輔助應用。", "outline": "1. ERP × AI 在企業營運中的定位\n2. AI 輔助 ERP 資料整理與判讀\n3. AI 輔助營運指標判讀\n4. 跨部門營運資訊整合應用\n5. AI 輔助營運決策與流程優化", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD009", "name": "企業內部 AI 助理導入：知識庫建置與流程問答應用", "benefit": "建立企業各部門內部 AI 助理與知識庫，提升內部流程問答效率，降低重複性人力負擔。", "outline": "1. 盤點可知識化的流程（客服/品管/行政/訓練常見問答）\n2. 建立內部知識庫架構（分類、權限、更新機制）\n3. 設計 AI 助理問答規則：一致回覆、引用依據、避免誤答\n4. 導入流程：從試點到上線（使用規範與風險控管）\n5. 以公司 SOP/表單內容完成一套可用的問答情境演練", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "3", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD010", "name": "製程品質風險辨識與預防管理實務", "benefit": "強化人員對製程品質風險之辨識與預防能力，降低異常發生率，提升流程穩定度與品質管理效能。", "outline": "1. 製程品質風險管理基礎概念\n2. 製程流程拆解與關鍵節點說明\n3. 關鍵品質控制點管理\n4. 預防性品質管理思維與應用\n5. 常見製程品質問題案例解析", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD011", "name": "GMP 文件管理與內部稽核應用", "benefit": "強化人員對 GMP 作業文件與流程標準之理解與遵循，提升文件一致性與流程穩定性，支援 GMP 制度長期運作。", "outline": "1. GMP 文件管理基礎概念\n2. 文件版本管理與控管原則\n3. 內部稽核文件準備實務\n4. 常見文件錯誤案例解析與管理方法\n5. 文件管理與稽核應對流程整合", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD012", "name": "實驗紀錄判讀與資訊整合實務", "benefit": "提升人員對實驗與作業紀錄的理解與判讀能力，減少紀錄錯誤與資訊遺漏情形，強化資料整合品質與可追溯性。", "outline": "1. 實驗紀錄在研發與品質管理中的角色\n2. 實驗紀錄判讀基礎與重點掌握\n3. 實驗資料整理與分類實務\n4. 資訊整合與跨部門應用\n5. 降低錯誤風險與提升決策品質", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD013", "name": "顧客互動流程優化與服務節點設計", "benefit": "建立標準化服務節點，降低人員差異造成的服務品質落差，優化流程設計，減少資訊遺漏與重複溝通，提升服務效率。", "outline": "1. 顧客互動流程的基礎概念\n2. 關鍵服務節點辨識與分類\n3. 現行服務流程痛點分析\n4. 服務流程優化與節點設計實務\n5. 服務流程落地與持續改善", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD014", "name": "業務推廣流程優化與市場開發實務", "benefit": "提升業務人員市場洞察與推廣執行能力，強化產品價值傳遞與客戶信任建立，有效提升成交率與市場拓展成效，支援公司營運成長與業務版圖擴大。", "outline": "1. 業務推廣流程的整體概念\n2. 現行業務推廣流程盤點\n3. 市場開發與客戶經營基礎\n4. 業務推廣流程優化實務\n5. 市場拓展策略與執行方向", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD015", "name": "企業內部知識傳承實務", "benefit": "協助將關鍵經驗與專業知識系統化保存，降低人員異動對營運之影響，提升人才培育穩定性。", "outline": "1. 企業內部知識傳承的核心概念\n2. 關鍵知識與經驗盤點\n3. 知識制度化與流程設計\n4. 內部教學與傳承機制建立\n5. 知識傳承落地與持續優化", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "5", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}, {"code": "HD016", "name": "食品廣告宣稱與標示法規風險控管", "benefit": "強化食品廣告與標示法規認知，降低違規風險，確保產品行銷與包裝合規。", "outline": "1. 食品廣告/宣稱/標示常見法規重點與違規態樣\n2. 社群與電商常踩雷用語解析（含案例討論）\n3. 建立內部「宣稱風險分級」與審稿檢核流程\n4. 包裝標示與行銷文案一致性檢核（避免資訊落差）\n5. 以公司現行文案/包裝情境進行合規調整演練", "stuQual": "通識職能(0)級以上", "tchQual": "專業職能(5)級以上", "venue": "高雄市前金區七賢二路122號11樓", "people": "10", "period": "一天", "hours": "6", "method": ["講授"], "evalT": ["面談"], "evalS": ["問卷調查"]}];
+const SIGNS={'D-007':['設計者簽名','需求部門主管簽名','TTQS推行小組存檔'],'D-001':['審查人簽名','教育長核定','H.D訓練稽核部存檔']};
+const LS='ttqs115_design_';
+function lsGet(c){try{return JSON.parse(localStorage.getItem(LS+c)||'null')}catch(e){return null}}
+function lsSet(c,v){try{localStorage.setItem(LS+c,JSON.stringify(v))}catch(e){}}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+/* 量表 */
+document.querySelectorAll('.scale-mid').forEach(function(m){
+  const k=m.parentNode.dataset.k;let h='';
+  for(let i=1;i<=5;i++)h+='<div class="sc"><span>'+i+'</span><input type="radio" name="'+k+'" value="'+i+'" required></div>';
+  m.innerHTML=h;
+});
+
+/* 課程下拉 */
+function courseData(code){
+  const base=COURSES.find(c=>c.code===code)||{};
+  const saved=lsGet(code)||{};
+  return Object.assign({},base,saved);
+}
+document.querySelectorAll('.picker').forEach(function(sel){
+  let h='<option value="">— 請選擇 —</option>';
+  COURSES.forEach(c=>{h+='<option value="'+c.code+'">'+c.code+'　'+c.name+'</option>'});
+  if(sel.id==='dPick')h+='<option value="__new">＋ 新增課程（自行填寫）</option>';
+  sel.innerHTML=h;
+  sel.addEventListener('change',function(){
+    const f=document.getElementById(sel.dataset.target);
+    if(sel.value==='__new'){clearForm(f);return;}
+    if(!sel.value)return;
+    const d=courseData(sel.value);
+    if(f.id==='fReview'){
+      d.needR=[d.need,d.comp?'對應職能：'+d.comp:''].filter(Boolean).join('\n');
+      d.materialR=[d.material,d.matSrc?'教材來源：'+d.matSrc:''].filter(Boolean).join('\n');
+      showSummary(d);
+    }
+    fillForm(f,d);
+  });
+});
+function clearForm(f){f.reset();setDefaults();}
+function fillForm(f,d){
+  f.querySelectorAll('[data-k]').forEach(function(el){
+    const k=el.dataset.k;if(!(k in d))return;const v=d[k];
+    if(el.classList.contains('choices')||el.classList.contains('scale-row')){
+      const arr=Array.isArray(v)?v:String(v||'').split('、');
+      el.querySelectorAll('input').forEach(i=>{i.checked=arr.indexOf(i.value)>=0});
+    }else{el.value=(v==null?'':v);}
+  });
+}
+const SUMMARY=[['code','課程代號'],['name','課程名稱'],['ver','規範書版次'],['designer','設計者'],['teacher','講師姓名'],['need','需求來源'],['comp','對應職能'],['benefit','課程效益'],['goal','訓練目標'],['outline','課程大綱'],['stuQual','學員資格'],['tchQual','講師資格'],['people','上課人數'],['hours','時數'],['venue','場地'],['method','教學方法'],['material','教材'],['matSrc','教材來源'],['evalS','評估方式'],['evalT','對講師評鑑'],['stake','利害關係人意見']];
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function showSummary(d){
+  let h='';SUMMARY.forEach(function(p){let v=d[p[0]];if(Array.isArray(v))v=v.join('、');h+='<tr><th>'+p[1]+'</th><td>'+(esc(v)||'<span style="color:#dc2626">（未填）</span>')+'</td></tr>'});
+  document.getElementById('sumtbl').innerHTML=h;const b=document.getElementById('sumbox');b.style.display='block';b.open=true;
+}
+
+/* 收集與送出（欄位標籤＝試算表欄位名稱） */
+function collect(f){
+  const data={formCode:f.dataset.code,submitTime:new Date().toLocaleString('zh-TW')};const raw={};
+  f.querySelectorAll('.f').forEach(function(fld){
+    const lb=fld.querySelector('label');if(!lb)return;
+    const label=lb.textContent.replace(/[\*＊]/g,'').trim();
+    const box=fld.querySelector('[data-k]');if(!box)return;const k=box.dataset.k;
+    let v;
+    if(box.classList.contains('choices')||box.classList.contains('scale-row')){
+      const vals=Array.from(box.querySelectorAll('input:checked')).map(i=>i.value);
+      v=box.dataset.radio?(vals[0]||''):vals.join('、');raw[k]=box.dataset.radio?v:vals;
+    }else{v=box.value;raw[k]=v;}
+    data[label]=v;
+  });
+  return {data:data,raw:raw};
+}
+function validChecks(f){
+  for(const box of f.querySelectorAll('[data-req]')){
+    if(!box.querySelector('input:checked')){alert('請至少勾選一項：'+box.parentNode.querySelector('label').textContent.replace('*','').trim());box.scrollIntoView({block:'center'});return false;}
+  }return true;
+}
+document.querySelectorAll('form').forEach(function(f){
+  f.addEventListener('submit',function(e){
+    e.preventDefault();if(!validChecks(f))return;
+    const btn=f.querySelector('.btn');btn.textContent='送出中...';btn.disabled=true;
+    const c=collect(f);
+    if(f.id==='fDesign'){lsSet(c.raw.code,c.raw);window.__lastDesign=c.raw.code;}
+    const ok=document.getElementById(f.id==='fDesign'?'okDesign':'okReview');
+    buildReceipt(ok,f,c.data);
+    try{fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(c.data)});}catch(err){console.error(err)}
+    setTimeout(function(){f.style.display='none';ok.style.display='block';if(f.id==='fReview')document.querySelector('#pReview .info').style.display='none';window.scrollTo(0,0);},800);
+  });
+});
+function buildReceipt(ok,f,data){
+  let rows='';Object.keys(data).forEach(function(k){if(k==='formCode'||k==='submitTime')return;rows+='<tr><th>'+esc(k)+'</th><td>'+(esc(data[k])||'—')+'</td></tr>'});
+  const r=ok.querySelector('.receipt');
+  r.innerHTML='<div class="rc-co">奇異生技股份有限公司　115年度訓練品質管理</div><h3>'+esc(f.dataset.title)+'</h3><div class="rc-meta">表單編號：'+esc(data.formCode)+'　｜　送出時間：'+esc(data.submitTime)+'</div><table>'+rows+'</table><table class="rc-sign"><tr>'+SIGNS[data.formCode].map(t=>'<td><div class="sl">'+t+'</div><div class="sb"></div><div class="sd">日期：　　　年　　月　　日</div></td>').join('')+'</tr></table>';
+  r.style.display='block';ok.__data=data;ok.__title=f.dataset.title;
+}
+function dlPDF(id){
+  const ok=document.getElementById(id),el=ok.querySelector('.receipt'),d=ok.__data||{};
+  let fn=(d.formCode||'TTQS')+'_'+(ok.__title||'')+'_'+(d['課程代號']||d['課程代碼']||'')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+  fn=fn.replace(/[\\/:*?"<>|\s]+/g,'_');
+  if(window.html2pdf){html2pdf().set({margin:10,filename:fn,image:{type:'jpeg',quality:.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(el).save();}
+  else{alert('PDF 元件未載入，將改用列印視窗，請選擇「另存為 PDF」。');window.print();}
+}
+function resetPane(t){
+  const f=document.getElementById(t==='design'?'fDesign':'fReview'),ok=document.getElementById(t==='design'?'okDesign':'okReview');
+  ok.style.display='none';f.style.display='';f.reset();f.querySelector('.btn').disabled=false;
+  f.querySelector('.btn').textContent=t==='design'?'送出課程設計表':'送出審查表';
+  if(t==='review'){document.querySelector('#pReview .info').style.display='';document.getElementById('sumbox').style.display='none';}
+  setDefaults();window.scrollTo(0,0);
+}
+function goReview(){
+  showTab('review');const code=window.__lastDesign;const sel=document.getElementById('rPick');
+  if(code&&!COURSES.find(c=>c.code===code)){const o=document.createElement('option');o.value=code;o.textContent=code+'　'+((lsGet(code)||{}).name||'');sel.appendChild(o);}
+  if(code){sel.value=code;sel.dispatchEvent(new Event('change'));}
+}
+
+/* 分頁 */
+function showTab(t){
+  document.body.className='t-'+t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.getElementById('pDesign').classList.toggle('on',t==='design');
+  document.getElementById('pReview').classList.toggle('on',t==='review');
+  try{history.replaceState(null,'','#'+t)}catch(e){}
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.t)));
+function setDefaults(){document.querySelectorAll('[data-k=ddate],[data-k=rdate]').forEach(i=>{if(!i.value)i.value=today()});const v=document.querySelector('#fDesign [data-k=ver]');if(!v.value)v.value='08';}
+setDefaults();
+if(location.hash==='#review')showTab('review');
+</script>
+</body>
+</html>
