@@ -102,7 +102,7 @@ textarea{min-height:96px;resize:vertical;line-height:1.6}
 
   <!-- ===================== ① 設計 ===================== -->
   <div class="pane on" id="pDesign">
-  <form id="fDesign" data-code="D-007" data-title="課程設計表（課程規範書）">
+  <form id="fDesign" data-code="D-007" data-sheet="D-007 課程設計表" data-title="課程設計表（課程規範書）">
     <div class="card pick"><div class="grid"><div class="full" style="display:flex;flex-direction:column;gap:5px">
       <label for="dPick">帶入現有課程（115年課程設計表）</label>
       <select id="dPick" class="picker" data-target="fDesign"></select>
@@ -291,7 +291,7 @@ function showSummary(d){
 
 /* 收集與送出（欄位標籤＝試算表欄位名稱） */
 function collect(f){
-  const data={formCode:f.dataset.code,submitTime:new Date().toLocaleString('zh-TW')};const raw={};
+  const data={formCode:(f.dataset.sheet||f.dataset.code),submitTime:new Date().toLocaleString('zh-TW')};const raw={};
   f.querySelectorAll('.f').forEach(function(fld){
     const lb=fld.querySelector('label');if(!lb)return;
     const label=lb.textContent.replace(/[\*＊]/g,'').trim();
@@ -325,12 +325,12 @@ document.querySelectorAll('form').forEach(function(f){
 function buildReceipt(ok,f,data){
   let rows='';Object.keys(data).forEach(function(k){if(k==='formCode'||k==='submitTime')return;rows+='<tr><th>'+esc(k)+'</th><td>'+(esc(data[k])||'—')+'</td></tr>'});
   const r=ok.querySelector('.receipt');
-  r.innerHTML='<div class="rc-co">奇異生技股份有限公司　115年度訓練品質管理</div><h3>'+esc(f.dataset.title)+'</h3><div class="rc-meta">表單編號：'+esc(data.formCode)+'　｜　送出時間：'+esc(data.submitTime)+'</div><table>'+rows+'</table><table class="rc-sign"><tr>'+SIGNS[data.formCode].map(t=>'<td><div class="sl">'+t+'</div><div class="sb"></div><div class="sd">日期：　　　年　　月　　日</div></td>').join('')+'</tr></table>';
-  r.style.display='block';ok.__data=data;ok.__title=f.dataset.title;
+  r.innerHTML='<div class="rc-co">奇異生技股份有限公司　115年度訓練品質管理</div><h3>'+esc(f.dataset.title)+'</h3><div class="rc-meta">表單編號：'+esc(f.dataset.code)+'　｜　送出時間：'+esc(data.submitTime)+'</div><table>'+rows+'</table><table class="rc-sign"><tr>'+SIGNS[f.dataset.code].map(t=>'<td><div class="sl">'+t+'</div><div class="sb"></div><div class="sd">日期：　　　年　　月　　日</div></td>').join('')+'</tr></table>';
+  r.style.display='block';ok.__data=data;ok.__title=f.dataset.title;ok.__code=f.dataset.code;
 }
 function dlPDF(id){
   const ok=document.getElementById(id),el=ok.querySelector('.receipt'),d=ok.__data||{};
-  let fn=(d.formCode||'TTQS')+'_'+(ok.__title||'')+'_'+(d['課程代號']||d['課程代碼']||'')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+  let fn=(ok.__code||'TTQS')+'_'+(ok.__title||'')+'_'+(d['課程代號']||d['課程代碼']||'')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
   fn=fn.replace(/[\\/:*?"<>|\s]+/g,'_');
   if(window.html2pdf){html2pdf().set({margin:10,filename:fn,image:{type:'jpeg',quality:.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(el).save();}
   else{alert('PDF 元件未載入，將改用列印視窗，請選擇「另存為 PDF」。');window.print();}
